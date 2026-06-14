@@ -1,0 +1,28 @@
+{
+  "name": "recollage",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "import:obsidian": "node scripts/import-obsidian.ts"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "nuxt": "^4.4.8",
+    "tailwindcss": "^4.3.1",
+    "vue": "^3.5.35",
+    "vue-router": "^5.1.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.16.0",
+    "@types/node": "^22.19.21",
+    "eslint": "^10.5.0",
+    "typescript": "^6.0.3"
+  }
+}

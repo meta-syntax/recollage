@@ -1,0 +1,28 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# ローカル実データ（個人の読書ハイライト・感想、Kindle引用＝著作権）。
+# scripts/import-obsidian.ts で再生成する。コミット用のダミーは data/sample/ に置く。
+data/mock

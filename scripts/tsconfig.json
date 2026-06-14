@@ -1,0 +1,16 @@
+{
+  // scripts/ は Node 単体実行のツール群（アプリ非依存）。Nuxt の app/server/shared
+  // tsconfig の管理外なので、Node 向けの型設定をここで与える。
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "../shared/types/**/*.ts"]
+}

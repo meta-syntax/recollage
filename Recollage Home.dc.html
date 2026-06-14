@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400..900&family=Shippori+Mincho+B1:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; }
+    body {
+      background-color: #f5eedd;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer></filter><rect width="180" height="180" filter="url(%23n)"/></svg>');
+    }
+    ::selection { background: #25407c; color: #f5eedd; }
+    button { -webkit-font-smoothing: antialiased; }
+  </style>
+</helmet>
+
+<div data-screen-label="ホームフィード" style="min-height: 100vh; color: #26211a; font-family: 'Shippori Mincho B1', serif;">
+  <div style="max-width: 1320px; margin: 0 auto; padding: 0 44px;">
+
+    <!-- ==== 最上段の細い帯 ==== -->
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 12px 2px 10px; border-bottom: 1px solid rgba(38,33,26,.4); font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; letter-spacing: .16em; color: rgba(38,33,26,.66);">
+      <span>2026年6月11日 木曜日</span>
+      <span style="font-weight: 700; color: rgba(38,33,26,.8);">第184号</span>
+      <span>本日の収録 {{ count }} 篇　<a href="Recollage 文芸版.dc.html" style="color: #25407c; text-decoration: none; border-bottom: 1px solid rgba(37,64,124,.5); padding-bottom: 1px; transition: border-color .2s;" style-hover="border-bottom: 1px solid #25407c;">文芸版 →</a>　<a href="Recollage ギャラリー版.dc.html" style="color: #25407c; text-decoration: none; border-bottom: 1px solid rgba(37,64,124,.5); padding-bottom: 1px; transition: border-color .2s;" style-hover="border-bottom: 1px solid #25407c;">ギャラリー版 →</a>　<a href="Recollage 図鑑版.dc.html" style="color: #25407c; text-decoration: none; border-bottom: 1px solid rgba(37,64,124,.5); padding-bottom: 1px; transition: border-color .2s;" style-hover="border-bottom: 1px solid #25407c;">図鑑版 →</a></span>
+    </div>
+
+    <!-- ==== マストヘッド ==== -->
+    <header style="display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; padding: 30px 0 24px;">
+      <div>
+        <div style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .34em; color: #25407c; margin-bottom: 10px;">じぶんの脳みそを覗ける雑誌</div>
+        <h1 style="margin: 0; font-family: 'Bodoni Moda', serif; font-weight: 850; font-size: 64px; line-height: 1; letter-spacing: .005em; color: #26211a;">Recollage</h1>
+        <div style="margin-top: 12px; font-size: 13px; letter-spacing: .2em; color: rgba(38,33,26,.72);">レコラージュ ── 私的編集誌</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px; padding-bottom: 4px;">
+        <div style="display: flex; gap: 10px;">
+          <button onClick="{{ shuffle }}" style="font-family: 'Shippori Mincho B1', serif; font-size: 13.5px; font-weight: 600; letter-spacing: .14em; color: #25407c; background: transparent; border: 1px solid #25407c; border-radius: 0; padding: 11px 20px; cursor: pointer; display: flex; align-items: center; gap: 9px; transition: background .2s ease, color .2s ease;" style-hover="background: #25407c; color: #f5eedd;">⟲ 誌面を組み直す</button>
+          <button style="font-family: 'Shippori Mincho B1', serif; font-size: 13.5px; font-weight: 600; letter-spacing: .14em; color: #f5eedd; background: #25407c; border: 1px solid #25407c; border-radius: 0; padding: 11px 20px; cursor: pointer; transition: background .2s ease;" style-hover="background: #1b2f5e;">＋ 記録する</button>
+        </div>
+        <div style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10.5px; letter-spacing: .1em; color: rgba(38,33,26,.55);">本日 {{ composedAt }} 編成 ・ 開くたびに誌面は変わります</div>
+      </div>
+    </header>
+
+    <!-- ==== カテゴリ目次(二重罫) ==== -->
+    <div style="border-top: 3px solid #26211a;">
+      <div style="border-top: 1px solid #26211a; margin-top: 2px;">
+        <nav style="display: flex; gap: 26px; align-items: baseline; padding: 12px 2px; border-bottom: 1px solid rgba(38,33,26,.35); font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 12.5px; font-weight: 500; color: rgba(38,33,26,.75); overflow-x: auto;">
+          <span style="font-weight: 700; color: #25407c; border-bottom: 2px solid #25407c; padding-bottom: 3px; white-space: nowrap;">すべて</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">物理学</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">開発</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">旅</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">数学</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">生物学</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">心理学</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">歴史</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">料理</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">思考法</span>
+          <span style="cursor: pointer; white-space: nowrap; transition: color .15s;" style-hover="color: #25407c;">ことば</span>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ==== 一面(特集 + 中見出し2本) ==== -->
+    <section style="display: grid; grid-template-columns: 1.6fr auto 1fr; padding: 36px 0 32px; border-bottom: 1px solid rgba(38,33,26,.35);">
+
+      <!-- 特集 -->
+      <article style="padding-right: 38px; opacity: {{ feature.op }}; transform: {{ feature.tf }}; transition: {{ feature.tr }};">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 14px; margin-bottom: 14px;">
+          <div style="display: flex; align-items: baseline; gap: 12px;">
+            <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .22em; color: #f5eedd; background: #25407c; padding: 4px 10px 3px;">特集</span>
+            <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11.5px; font-weight: 700; letter-spacing: .12em; color: #25407c;">{{ feature.cat }}</span>
+          </div>
+          <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; letter-spacing: .1em; color: rgba(38,33,26,.55);">{{ feature.date }}</span>
+        </div>
+        <h2 style="margin: 0 0 20px; font-size: 38px; line-height: 1.5; font-weight: 800; letter-spacing: .01em; text-wrap: pretty; cursor: pointer; transition: color .2s;" style-hover="color: #25407c;">{{ feature.title }}</h2>
+        <div style="border: 1px solid rgba(38,33,26,.4); background: #ece1c6;">{{ feature.figEl }}</div>
+        <div style="display: flex; justify-content: space-between; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10.5px; letter-spacing: .08em; color: rgba(38,33,26,.6); margin: 8px 0 16px;">
+          <span>{{ feature.figCap }}</span>
+          <span>自動生成図版</span>
+        </div>
+        <p style="margin: 0; font-size: 15px; line-height: 2.1; color: rgba(38,33,26,.88); text-wrap: pretty;">{{ feature.body }}</p>
+        <div style="margin-top: 16px;">
+          <span style="font-size: 13px; font-weight: 600; letter-spacing: .12em; color: #25407c; border-bottom: 1px solid rgba(37,64,124,.55); padding-bottom: 2px; cursor: pointer; transition: border-color .2s;" style-hover="border-bottom: 1px solid #25407c;">つづきを読む ──→</span>
+        </div>
+      </article>
+
+      <!-- 縦書きの仕切り -->
+      <div style="writing-mode: vertical-rl; border-left: 1px solid rgba(38,33,26,.3); border-right: 1px solid rgba(38,33,26,.3); padding: 8px 17px; font-size: 12.5px; font-weight: 600; letter-spacing: .42em; color: rgba(37,64,124,.8);">過去の自分と、出会い直す。</div>
+
+      <!-- 中見出し2本 -->
+      <div style="padding-left: 38px; display: flex; flex-direction: column;">
+        <sc-for list="{{ sides }}" as="item" hint-placeholder-count="2">
+          <article style="padding: 4px 0 24px; margin-bottom: 24px; border-bottom: 1px solid rgba(38,33,26,.25); cursor: pointer; opacity: {{ item.op }}; transform: {{ item.tf }}; transition: {{ item.tr }};">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px;">
+              <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .12em; color: #25407c;">{{ item.cat }}</span>
+              <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10.5px; letter-spacing: .1em; color: rgba(38,33,26,.55);">{{ item.date }}</span>
+            </div>
+            <h3 style="margin: 0 0 10px; font-size: 21.5px; line-height: 1.65; font-weight: 700; text-wrap: pretty; transition: color .2s;" style-hover="color: #25407c;">{{ item.title }}</h3>
+            <p style="margin: 0; font-size: 13.5px; line-height: 2; color: rgba(38,33,26,.78); text-wrap: pretty;">{{ item.body }}</p>
+          </article>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ==== 多段組の誌面 ==== -->
+    <section style="columns: 282px; column-gap: 42px; column-rule: 1px solid rgba(38,33,26,.28); padding: 10px 0 18px;">
+      <sc-for list="{{ rest }}" as="item" hint-placeholder-count="8">
+        <article style="break-inside: avoid; padding: 20px 6px 22px; border-bottom: 1px solid rgba(38,33,26,.25); cursor: pointer; opacity: {{ item.op }}; transform: {{ item.tf }}; transition: {{ item.tr }};" style-hover="background: rgba(37,64,124,.045);">
+          <sc-if value="{{ item.figEl }}" hint-placeholder-val="{{ false }}">
+            <div style="border: 1px solid rgba(38,33,26,.4); background: #ece1c6;">{{ item.figEl }}</div>
+            <div style="display: flex; justify-content: space-between; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px; letter-spacing: .08em; color: rgba(38,33,26,.6); margin: 7px 0 14px;">
+              <span>{{ item.figCap }}</span>
+              <span>自動生成図版</span>
+            </div>
+          </sc-if>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 7px;">
+            <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; color: #25407c;">{{ item.cat }}</span>
+            <span style="font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 10px; letter-spacing: .1em; color: rgba(38,33,26,.55);">{{ item.date }}</span>
+          </div>
+          <sc-if value="{{ item.notMemo }}" hint-placeholder-val="{{ true }}">
+            <h3 style="margin: 0 0 9px; font-size: {{ item.hs }}px; line-height: 1.65; font-weight: 700; text-wrap: pretty; transition: color .2s;" style-hover="color: #25407c;">{{ item.title }}</h3>
+            <p style="margin: 0; font-size: 13.5px; line-height: 1.95; color: rgba(38,33,26,.78); text-wrap: pretty;">{{ item.body }}</p>
+          </sc-if>
+          <sc-if value="{{ item.isMemo }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; gap: 11px; margin-top: 4px;">
+              <span style="color: #25407c; font-size: 10px; line-height: 2.6;">■</span>
+              <p style="margin: 0; font-size: 15.5px; line-height: 1.95; font-weight: 500; text-wrap: pretty;">{{ item.title }}</p>
+            </div>
+          </sc-if>
+        </article>
+      </sc-for>
+    </section>
+
+    <!-- ==== 奥付 ==== -->
+    <footer style="border-top: 2px solid #26211a; margin-top: 8px;">
+      <div style="border-top: 1px solid rgba(38,33,26,.55); margin-top: 2px; padding: 30px 0 64px; text-align: center;">
+        <div style="font-size: 13.5px; letter-spacing: .3em; color: rgba(38,33,26,.8);">── 本日の誌面は、ここまで ──</div>
+        <div style="margin-top: 14px; font-family: 'Zen Kaku Gothic New', sans-serif; font-size: 11px; letter-spacing: .14em; color: rgba(38,33,26,.55);">Recollage はあなたの {{ count }} 篇の記録からこの誌面を編みました。組み直すたび、別の出会いがあります。</div>
+      </div>
+    </footer>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    order: ['cat', 'nuxt', 'fermi', 'daibutsu', 'zeigarnik', 'has', 'bayes', 'miso', 'edo', 'tsundoku', 'bee', 'tone', 'shikii'],
+    hidden: false,
+    composedAt: '7:42'
+  };
+
+  DATA = {
+    cat:      { id: 'cat', type: 'L', fig: 'interference', figCap: '図A｜二重スリットの干渉模式', cat: '物理学 › 量子力学', date: '6月9日',
+                title: 'シュレディンガーの猫は「半分死んでいる」わけではない',
+                body: '重ね合わせは観測前の確率の記述であって、猫そのものの状態ではない。マクロな系ではデコヒーレンスが一瞬で進むため、箱を開ける前から猫はとっくに「どちらか」になっている。あの思考実験は量子力学の奇妙さではなく、解釈の難しさを突くためのものだった。' },
+    daibutsu: { id: 'daibutsu', type: 'L', fig: 'casting', figCap: '図B｜鋳継ぎの段組み模式', cat: '旅 › 鎌倉', date: '6月1日',
+                title: '鎌倉の大仏、121トンの銅をどう積み上げたか',
+                body: '一度に鋳られたのではない。鋳型を段に分け、下から順に溶けた銅を流して鋳継いでいった。段の継ぎ目は今も背中や側面に線として残っていて、触れられる距離で確かめられる。' },
+    bayes:    { id: 'bayes', type: 'L', fig: 'bayes', figCap: '図C｜事前確率の更新', cat: '数学 › 確率', date: '5月24日',
+                title: 'ベイズの定理は「思い込みの更新式」と読む',
+                body: '事前確率 × 尤度 ∝ 事後確率。検査の陽性的中率が直感よりずっと低くなるのは、事前確率(有病率)を無視してしまうから。式より先に、この一行を覚えておく。' },
+    bee:      { id: 'bee', type: 'L', fig: 'waggle', figCap: '図D｜尻振りダンスの軌道', cat: '生物学 › 行動', date: '5月18日',
+                title: 'ミツバチの8の字ダンスは、太陽基準の地図になっている',
+                body: '8の字の直進部の角度が「太陽と餌場のなす角」を示し、尻を振る時間の長さが距離を表す。巣板は垂直なので、重力の真上を太陽の方向に読み替えて踊る。' },
+    nuxt:     { id: 'nuxt', type: 'M', cat: '開発 › フロントエンド', date: '6月10日',
+                title: 'Nuxtのハイドレーションエラーの正体',
+                body: 'サーバーが描いたHTMLと、クライアントの初回描画が食い違うと起きる。Date.now() や乱数を setup に直書きしない。怪しい箇所は <ClientOnly> で切り分けて特定する。' },
+    fermi:    { id: 'fermi', type: 'M', cat: '思考法 › 見積もり', date: '6月7日',
+                title: 'フェルミ推定は「桁が合えば勝ち」のゲーム',
+                body: 'シカゴのピアノ調律師問題。分解 → 大胆な仮定 → 掛け算。精度を決めるのは仮定の細かさではなく、分解の筋の良さだった。' },
+    miso:     { id: 'miso', type: 'M', cat: '料理 › 発酵', date: '6月3日',
+                title: '味噌は「麹歩合」で選ぶと迷わない',
+                body: '大豆10に対する麹の割合のこと。歩合が高いほど甘く軽く、低いほど旨味が濃く塩辛い。白味噌は20歩合前後、八丁味噌は米麹を使わず豆だけで仕込む。' },
+    zeigarnik:{ id: 'zeigarnik', type: 'M', cat: '心理学 › 記憶', date: '5月29日',
+                title: 'ツァイガルニク効果 ── 中断した作業ほど頭に残る',
+                body: '完了した課題より、未完了の課題のほうが思い出されやすい。連ドラの「つづく」も、閉店間際のカフェで妙に進む原稿も、たぶん同じ仕様。' },
+    edo:      { id: 'edo', type: 'M', cat: '歴史 › 江戸', date: '5月22日',
+                title: '江戸の水道は、ポンプなしで43kmを流れた',
+                body: '玉川上水。羽村の取水堰から四谷大木戸まで、標高差およそ92mの自然流下だけで通水した。武蔵野台地の尾根筋を、江戸期の測量技術で正確になぞっている。' },
+    tone:     { id: 'tone', type: 'M', cat: '地理 › 河川', date: '5月15日',
+                title: '利根川は、人の手で東へ曲げられた川',
+                body: '家康以来およそ60年の「利根川東遷」。江戸湾へ注いでいた流れを銚子へ付け替え、水害を逸らしながら舟運の大動脈をつくった。' },
+    has:      { id: 'has', type: 'S', cat: '開発 › CSS', date: '6月8日',
+                title: ':has() がもう全ブラウザで常用圏。親セレクタのある世界では、設計の順番が変わる。' },
+    shikii:   { id: 'shikii', type: 'S', cat: 'ことば', date: '6月11日',
+                title: '「敷居が高い」は本来 “不義理があって行きづらい” の意。高級店の意味は後から来た。' },
+    tsundoku: { id: 'tsundoku', type: 'S', cat: '断片', date: '6月5日',
+                title: '積読は未来の自分への手紙、と思えば罪悪感が薄れる。' }
+  };
+
+  fig(name) {
+    const h = React.createElement;
+    const INK = '#25407c';
+    const svg = (vh, children) => h('svg', { viewBox: '0 0 360 ' + vh, width: '100%', style: { display: 'block' } }, children);
+
+    if (name === 'interference') {
+      const rings = [];
+      [12, 26, 40, 54, 68, 82].forEach(r => {
+        rings.push(h('circle', { key: 'a' + r, cx: 128, cy: 100, r, fill: 'none', stroke: INK, strokeWidth: 1, opacity: .65 }));
+        rings.push(h('circle', { key: 'b' + r, cx: 232, cy: 100, r, fill: 'none', stroke: INK, strokeWidth: 1, opacity: .65 }));
+      });
+      return svg(200, [
+        ...rings,
+        h('line', { key: 'sl', x1: 180, y1: 14, x2: 180, y2: 186, stroke: INK, strokeWidth: 1, strokeDasharray: '2 6' }),
+        h('circle', { key: 'p1', cx: 128, cy: 100, r: 3, fill: INK }),
+        h('circle', { key: 'p2', cx: 232, cy: 100, r: 3, fill: INK })
+      ]);
+    }
+
+    if (name === 'casting') {
+      const widths = [296, 270, 238, 202, 162, 118, 72];
+      const tiers = [];
+      widths.forEach((w, i) => {
+        const y = 192 - 25 * (i + 1);
+        tiers.push(h('rect', {
+          key: 't' + i, x: 180 - w / 2, y, width: w, height: 25,
+          fill: i % 2 ? 'rgba(37,64,124,.09)' : 'none', stroke: INK, strokeWidth: 1, opacity: .85
+        }));
+        tiers.push(h('line', { key: 's' + i, x1: 26, y1: y + 25, x2: 334, y2: y + 25, stroke: INK, strokeWidth: .8, strokeDasharray: '2 7', opacity: .4 }));
+      });
+      return svg(214, [
+        ...tiers,
+        h('line', { key: 'base', x1: 26, y1: 192, x2: 334, y2: 192, stroke: INK, strokeWidth: 1.4 })
+      ]);
+    }
+
+    if (name === 'bayes') {
+      return svg(200, [
+        h('rect', { key: 'fr', x: 32, y: 26, width: 296, height: 148, fill: 'none', stroke: INK, strokeWidth: 1, opacity: .8 }),
+        h('circle', { key: 'ca', cx: 152, cy: 100, r: 56, fill: 'rgba(37,64,124,.13)', stroke: INK, strokeWidth: 1, opacity: .9 }),
+        h('circle', { key: 'cb', cx: 214, cy: 100, r: 56, fill: 'rgba(37,64,124,.13)', stroke: INK, strokeWidth: 1, opacity: .9 }),
+        h('text', { key: 'la', x: 112, y: 105, fontSize: 14, fontFamily: 'serif', fontStyle: 'italic', fill: INK }, 'A'),
+        h('text', { key: 'lb', x: 244, y: 105, fontSize: 14, fontFamily: 'serif', fontStyle: 'italic', fill: INK }, 'B')
+      ]);
+    }
+
+    if (name === 'waggle') {
+      const rays = [];
+      for (let i = 0; i < 8; i++) {
+        const a = Math.PI * 2 * i / 8;
+        rays.push(h('line', {
+          key: 'r' + i,
+          x1: 316 + Math.cos(a) * 13, y1: 36 + Math.sin(a) * 13,
+          x2: 316 + Math.cos(a) * 19, y2: 36 + Math.sin(a) * 19,
+          stroke: INK, strokeWidth: 1
+        }));
+      }
+      return svg(200, [
+        h('path', { key: 'eight', d: 'M180,108 C218,56 298,58 298,108 C298,158 218,160 180,108 C142,56 62,58 62,108 C62,158 142,160 180,108', fill: 'none', stroke: INK, strokeWidth: 1.4, strokeDasharray: '5 5' }),
+        h('line', { key: 'angle', x1: 180, y1: 108, x2: 308, y2: 42, stroke: INK, strokeWidth: .9, strokeDasharray: '2 6', opacity: .65 }),
+        h('circle', { key: 'sun', cx: 316, cy: 36, r: 9, fill: 'none', stroke: INK, strokeWidth: 1.2 }),
+        ...rays,
+        h('circle', { key: 'hive', cx: 180, cy: 108, r: 3.5, fill: INK })
+      ]);
+    }
+    return null;
+  }
+
+  shuffle = () => {
+    if (this._busy) return;
+    this._busy = true;
+    this.setState({ hidden: true });
+    setTimeout(() => {
+      const order = [...this.state.order];
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      const t = new Date();
+      const composedAt = t.getHours() + ':' + String(t.getMinutes()).padStart(2, '0');
+      this.setState({ order, hidden: false, composedAt });
+      this._busy = false;
+    }, 420);
+  };
+
+  renderVals() {
+    const { order, hidden, composedAt } = this.state;
+    const list = order.map(id => this.DATA[id]);
+    const feature = list.find(x => x.type === 'L');
+    const sides = list.filter(x => x !== feature && x.type === 'M').slice(0, 2);
+    const used = new Set([feature.id, ...sides.map(s => s.id)]);
+    const rest = list.filter(x => !used.has(x.id));
+
+    let i = 0;
+    const deco = (x) => {
+      const d = i++;
+      return Object.assign({}, x, {
+        figEl: x.fig ? this.fig(x.fig) : null,
+        isMemo: x.type === 'S',
+        notMemo: x.type !== 'S',
+        hs: x.type === 'L' ? 23 : 19.5,
+        op: hidden ? 0 : 1,
+        tf: hidden ? 'translateY(14px)' : 'translateY(0px)',
+        tr: hidden
+          ? 'opacity .26s ease ' + (d * 12) + 'ms, transform .3s ease ' + (d * 12) + 'ms'
+          : 'opacity .55s ease ' + (130 + d * 48) + 'ms, transform .6s cubic-bezier(.2,.7,.2,1) ' + (130 + d * 48) + 'ms'
+      });
+    };
+
+    return {
+      feature: deco(feature),
+      sides: sides.map(deco),
+      rest: rest.map(deco),
+      shuffle: this.shuffle,
+      composedAt,
+      count: order.length
+    };
+  }
+}
+</script>
+</body>
+</html>
