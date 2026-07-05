@@ -86,17 +86,21 @@ function commitRename() {
               class="act"
               @click="startRename(element)"
             >改名</button>
+            <template v-if="confirmingId === element.id">
+              <button
+                class="act danger"
+                @click="onRemove(element.id); confirmingId = null"
+              >削除する</button>
+              <button
+                class="act"
+                @click="confirmingId = null"
+              >やめる</button>
+            </template>
             <button
-              v-if="confirmingId !== element.id"
+              v-else
               class="act"
               @click="confirmingId = element.id"
             >削除</button>
-            <button
-              v-else
-              class="act danger"
-              @blur="confirmingId = null"
-              @click="onRemove(element.id); confirmingId = null"
-            >削除する？</button>
           </span>
         </div>
         <CategoryTree
