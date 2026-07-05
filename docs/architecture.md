@@ -108,3 +108,4 @@ CSRの初期ロード対策（スケルトン・ローカルキャッシュ・SW
 | ADR-008 | フィード編成アルゴリズム（スコア式・間隔反復resurface・セッションシード） |
 | ADR-009 | Lint/整形: ESLint Stylistic に一本化（Prettier不採用） |
 | ADR-010 | Tailwind導入手段: first-party Viteプラグイン（モジュール不採用） |
+| ADR-011 | CMS入力・編集体験の設計（キャプチャ／構造化促し／編集／カテゴリ管理） |
