@@ -135,6 +135,8 @@ export function useFeed() {
     feature: computed(() => arranged.value.feature),
     sides: computed(() => arranged.value.sides),
     rest: computed(() => arranged.value.rest),
+    // 誌面の版を識別するキー。組み直しで変わる（誌面差し替えアニメーションのトリガー）
+    compositionKey: computed(() => seed.value),
     recompose,
   }
 }
