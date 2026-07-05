@@ -48,13 +48,13 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(38, 33, 26, .45);
+  background: var(--scrim);
 }
 .panel {
   width: min(640px, 100%);
-  background: #f5eedd;
-  border: 1px solid #26211a;
-  box-shadow: 6px 6px 0 rgba(38, 33, 26, .35);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  box-shadow: 6px 6px 0 var(--shadow);
 }
 
 .modal-enter-active { transition: opacity .22s ease; }

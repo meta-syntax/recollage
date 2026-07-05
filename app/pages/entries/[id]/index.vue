@@ -54,34 +54,34 @@ function backToFeed() {
   margin: 0 auto;
   padding: 0 44px;
   min-height: 100vh;
-  color: #26211a;
-  font-family: 'Shippori Mincho B1', serif;
+  color: var(--text);
+  font-family: var(--font-serif);
 }
 .return-bar {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   padding: 18px 2px 14px;
-  border-bottom: 1px solid rgba(38, 33, 26, .4);
+  border-bottom: 1px solid var(--line);
 }
 .return-link {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .14em;
-  color: #25407c;
+  color: var(--accent);
   text-decoration: none;
   background: transparent;
   border: none;
   padding: 0;
   cursor: pointer;
 }
-.return-link:hover { border-bottom: 1px solid #25407c; }
+.return-link:hover { border-bottom: 1px solid var(--accent); }
 .notfound {
   padding: 80px 0;
   text-align: center;
   font-size: 14px;
-  color: rgba(38, 33, 26, .7);
+  color: var(--text-muted);
   display: flex;
   flex-direction: column;
   gap: 16px;

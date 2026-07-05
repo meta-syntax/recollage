@@ -214,25 +214,25 @@ async function save() {
   gap: 8px;
 }
 .label {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .22em;
-  color: #25407c;
+  color: var(--accent);
 }
 .input {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 15px;
   line-height: 1.9;
-  color: #26211a;
+  color: var(--text);
   background: transparent;
-  border: 1px solid rgba(38, 33, 26, .4);
+  border: 1px solid var(--line);
   padding: 10px 14px;
   outline: none;
   resize: vertical;
 }
-.input:focus { border-color: #25407c; }
-.input::placeholder { color: rgba(38, 33, 26, .38); }
+.input:focus { border-color: var(--accent); }
+.input::placeholder { color: var(--text-faint); }
 select.input { cursor: pointer; }
 .visual-row { display: flex; gap: 10px; }
 .visual-type { width: 160px; }
@@ -241,27 +241,27 @@ select.input { cursor: pointer; }
   display: flex;
   justify-content: flex-end;
   padding-top: 6px;
-  border-top: 1px solid rgba(38, 33, 26, .25);
+  border-top: 1px solid var(--line-soft);
 }
 .submit {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: .14em;
-  color: #f5eedd;
-  background: #25407c;
-  border: 1px solid #25407c;
+  color: var(--text-inverse);
+  background: var(--accent);
+  border: 1px solid var(--accent);
   padding: 11px 30px;
   margin-top: 16px;
   cursor: pointer;
   transition: background .2s ease;
 }
-.submit:hover:not(:disabled) { background: #1b2f5e; }
+.submit:hover:not(:disabled) { background: var(--accent-strong); }
 .submit:disabled { opacity: .45; cursor: default; }
 .notfound {
   padding: 80px 0;
   text-align: center;
   font-size: 14px;
-  color: rgba(38, 33, 26, .7);
+  color: var(--text-muted);
 }
 </style>

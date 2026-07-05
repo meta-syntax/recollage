@@ -40,18 +40,18 @@ defineEmits<{
 </template>
 
 <style scoped>
-.toc { border-top: 3px solid #26211a; }
-.toc-inner { border-top: 1px solid #26211a; margin-top: 2px; }
+.toc { border-top: 3px solid var(--line-strong); }
+.toc-inner { border-top: 1px solid var(--line-strong); margin-top: 2px; }
 .toc-nav {
   display: flex;
   gap: 26px;
   align-items: baseline;
   padding: 12px 2px;
-  border-bottom: 1px solid rgba(38, 33, 26, .35);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 500;
-  color: rgba(38, 33, 26, .75);
+  color: var(--text-muted);
   overflow-x: auto;
 }
 .toc-item {
@@ -64,16 +64,16 @@ defineEmits<{
   font: inherit;
   color: inherit;
 }
-.toc-item:hover { color: #25407c; }
+.toc-item:hover { color: var(--accent); }
 .toc-item--active {
   font-weight: 700;
-  color: #25407c;
-  border-bottom: 2px solid #25407c;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
   padding-bottom: 3px;
 }
 .toc-manage {
   margin-left: auto;
-  color: rgba(38, 33, 26, .5);
+  color: var(--text-soft);
   text-decoration: none;
   font-size: 11.5px;
 }

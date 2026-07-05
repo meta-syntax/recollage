@@ -1,15 +1,70 @@
 @import "tailwindcss";
 
+/* ── Primitive層（ADR-007）──
+   Claude Design 探索で選定した現行誌面デザインからの逆抽出値。
+   feature層コンポーネントでの直接使用は禁止（semantic 経由。primitive 直書きは ui/ まで） */
+@theme {
+  --color-paper: #f5eedd;
+  --color-paper-dim: #ece1c6;
+  --color-ink: #26211a;
+  --color-indigo: #25407c;
+  --color-indigo-deep: #1b2f5e;
+  --color-bengara: #8c2f22;
+
+  --font-serif: 'Shippori Mincho B1', serif;
+  --font-sans: 'Zen Kaku Gothic New', sans-serif;
+  --font-display: 'Bodoni Moda', serif;
+}
+
+/* ── Semantic層（ADR-007）──
+   用途名。誌面の顔の変更はこの再マッピング1箇所で全体に波及する。
+   透過の段階は逆抽出時に 生成ノイズ19段階 → 役割スケールへ束ねた（±.08 以内の丸め） */
+:root {
+  /* 面 */
+  --surface: var(--color-paper);
+  --surface-dim: var(--color-paper-dim);
+  --surface-inverse: var(--color-ink);
+  --scrim: color-mix(in srgb, var(--color-ink) 45%, transparent);
+
+  /* 文字 */
+  --text: var(--color-ink);
+  --text-body: color-mix(in srgb, var(--color-ink) 90%, transparent);
+  --text-muted: color-mix(in srgb, var(--color-ink) 75%, transparent);
+  --text-soft: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  --text-faint: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  --text-inverse: var(--color-paper);
+  --text-inverse-muted: color-mix(in srgb, var(--color-paper) 60%, transparent);
+
+  /* 藍（アクセント） */
+  --accent: var(--color-indigo);
+  --accent-strong: var(--color-indigo-deep);
+  --accent-muted: color-mix(in srgb, var(--color-indigo) 75%, transparent);
+  --accent-soft: color-mix(in srgb, var(--color-indigo) 55%, transparent);
+  --accent-line: color-mix(in srgb, var(--color-indigo) 45%, transparent);
+  --accent-wash: color-mix(in srgb, var(--color-indigo) 4%, transparent);
+
+  /* 罫線・影 */
+  --line-strong: var(--color-ink);
+  --line: color-mix(in srgb, var(--color-ink) 40%, transparent);
+  --line-soft: color-mix(in srgb, var(--color-ink) 28%, transparent);
+  --line-inverse: color-mix(in srgb, var(--color-paper) 60%, transparent);
+  --shadow: color-mix(in srgb, var(--color-ink) 33%, transparent);
+
+  /* 警告 */
+  --danger: var(--color-bengara);
+  --danger-line: color-mix(in srgb, var(--color-bengara) 40%, transparent);
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color: #f5eedd;
+  background-color: var(--surface);
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.05"/></feComponentTransfer></filter><rect width="180" height="180" filter="url(%23n)"/></svg>');
-  color: #26211a;
-  font-family: 'Shippori Mincho B1', serif;
+  color: var(--text);
+  font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: #25407c; color: #f5eedd; }
+::selection { background: var(--accent); color: var(--text-inverse); }
 
 button { font-family: inherit; -webkit-font-smoothing: antialiased; }

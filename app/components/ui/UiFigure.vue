@@ -29,8 +29,8 @@ defineProps<{
 
 <style scoped>
 .figure {
-  border: 1px solid rgba(38, 33, 26, .4);
-  background: #ece1c6;
+  border: 1px solid var(--line);
+  background: var(--surface-dim);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,10 +41,10 @@ defineProps<{
 .figure-cap {
   display: flex;
   justify-content: space-between;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: .08em;
-  color: rgba(38, 33, 26, .6);
+  color: var(--text-soft);
   margin: 8px 0 16px;
 }
 </style>

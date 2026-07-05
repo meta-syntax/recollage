@@ -37,13 +37,13 @@ defineProps<{
   display: block;
   break-inside: avoid;
   padding: 20px 6px 22px;
-  border-bottom: 1px solid rgba(38, 33, 26, .25);
+  border-bottom: 1px solid var(--line-soft);
   cursor: pointer;
   transition: background .2s;
   color: inherit;
   text-decoration: none;
 }
-.col-article:hover { background: rgba(37, 64, 124, .045); }
+.col-article:hover { background: var(--accent-wash); }
 .col-head {
   display: flex;
   justify-content: space-between;
@@ -52,17 +52,17 @@ defineProps<{
   margin-bottom: 7px;
 }
 .col-cat {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: .12em;
-  color: #25407c;
+  color: var(--accent);
 }
 .col-date {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .col-title {
   margin: 0 0 9px;
@@ -72,12 +72,12 @@ defineProps<{
   text-wrap: pretty;
   transition: color .2s;
 }
-.col-article:hover .col-title { color: #25407c; }
+.col-article:hover .col-title { color: var(--accent); }
 .col-body {
   margin: 0;
   font-size: 13.5px;
   line-height: 1.95;
-  color: rgba(38, 33, 26, .78);
+  color: var(--text-muted);
   text-wrap: pretty;
   display: -webkit-box;
   -webkit-line-clamp: 5;

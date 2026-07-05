@@ -18,19 +18,19 @@ defineProps<{
 </template>
 
 <style scoped>
-.colophon { border-top: 2px solid #26211a; margin-top: 8px; }
+.colophon { border-top: 2px solid var(--line-strong); margin-top: 8px; }
 .colophon-inner {
-  border-top: 1px solid rgba(38, 33, 26, .55);
+  border-top: 1px solid var(--line);
   margin-top: 2px;
   padding: 30px 0 64px;
   text-align: center;
 }
-.colophon-end { font-size: 13.5px; letter-spacing: .3em; color: rgba(38, 33, 26, .8); }
+.colophon-end { font-size: 13.5px; letter-spacing: .3em; color: var(--text-muted); }
 .colophon-note {
   margin-top: 14px;
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: .14em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 </style>

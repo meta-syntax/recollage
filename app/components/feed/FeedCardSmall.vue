@@ -38,13 +38,13 @@ defineProps<{
   display: block;
   break-inside: avoid;
   padding: 20px 6px 22px;
-  border-bottom: 1px solid rgba(38, 33, 26, .25);
+  border-bottom: 1px solid var(--line-soft);
   cursor: pointer;
   transition: background .2s;
   color: inherit;
   text-decoration: none;
 }
-.col-article:hover { background: rgba(37, 64, 124, .045); }
+.col-article:hover { background: var(--accent-wash); }
 .col-head {
   display: flex;
   justify-content: space-between;
@@ -53,34 +53,34 @@ defineProps<{
   margin-bottom: 7px;
 }
 .col-cat {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: .12em;
-  color: #25407c;
+  color: var(--accent);
 }
 .col-date {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .arrange {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: .12em;
-  color: rgba(37, 64, 124, .75);
+  color: var(--accent-muted);
   background: transparent;
-  border: 1px dashed rgba(37, 64, 124, .45);
+  border: 1px dashed var(--accent-line);
   padding: 3px 9px;
   margin-top: 2px;
   cursor: pointer;
   transition: color .2s ease, border-color .2s ease;
 }
-.arrange:hover { color: #25407c; border-color: #25407c; }
+.arrange:hover { color: var(--accent); border-color: var(--accent); }
 .memo { display: flex; gap: 11px; margin-top: 4px; }
-.memo-mark { color: #25407c; font-size: 10px; line-height: 2.6; }
+.memo-mark { color: var(--accent); font-size: 10px; line-height: 2.6; }
 .memo-text {
   margin: 0;
   font-size: 15.5px;

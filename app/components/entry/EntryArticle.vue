@@ -105,17 +105,17 @@ defineProps<{
   margin-bottom: 16px;
 }
 .article-cat {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .14em;
-  color: #25407c;
+  color: var(--accent);
 }
 .article-date {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .article-title {
   margin: 0 0 28px;
@@ -125,7 +125,7 @@ defineProps<{
   letter-spacing: .01em;
   text-wrap: pretty;
   padding-bottom: 22px;
-  border-bottom: 1px solid rgba(38, 33, 26, .35);
+  border-bottom: 1px solid var(--line);
 }
 
 .article-layout {
@@ -140,17 +140,17 @@ defineProps<{
 
 /* 要点囲み */
 .keypoints {
-  border: 1px solid rgba(38, 33, 26, .4);
+  border: 1px solid var(--line);
   padding: 18px 22px 16px;
   margin-bottom: 28px;
-  background: rgba(37, 64, 124, .035);
+  background: var(--accent-wash);
 }
 .keypoints-label {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .28em;
-  color: #25407c;
+  color: var(--accent);
   margin-bottom: 10px;
 }
 .keypoints-list {
@@ -171,7 +171,7 @@ defineProps<{
   top: 0;
   font-size: 9px;
   line-height: 2.9;
-  color: #25407c;
+  color: var(--accent);
 }
 
 /* 本文 */
@@ -179,7 +179,7 @@ defineProps<{
   margin: 0 0 1.6em;
   font-size: 15.5px;
   line-height: 2.15;
-  color: rgba(38, 33, 26, .9);
+  color: var(--text-body);
   text-wrap: pretty;
 }
 .body-h {
@@ -193,11 +193,11 @@ defineProps<{
   padding-left: 1.4em;
   font-size: 15px;
   line-height: 2.05;
-  color: rgba(38, 33, 26, .9);
+  color: var(--text-body);
 }
 .body-hr {
   text-align: center;
-  color: rgba(37, 64, 124, .6);
+  color: var(--accent-soft);
   font-size: 12px;
   margin: 2em 0;
 }
@@ -206,10 +206,10 @@ defineProps<{
 .background {
   margin-top: 34px;
   padding-top: 14px;
-  border-top: 1px solid rgba(38, 33, 26, .25);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  border-top: 1px solid var(--line-soft);
+  font-family: var(--font-sans);
   font-size: 12px;
   letter-spacing: .08em;
-  color: rgba(38, 33, 26, .6);
+  color: var(--text-soft);
 }
 </style>

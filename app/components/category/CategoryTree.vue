@@ -117,7 +117,7 @@ function commitRename() {
 .tree { min-height: 4px; }
 .children {
   margin-left: 26px;
-  border-left: 1px solid rgba(38, 33, 26, .2);
+  border-left: 1px solid var(--line-soft);
   padding-left: 10px;
 }
 .node { padding: 2px 0; }
@@ -131,9 +131,9 @@ function commitRename() {
   cursor: grab;
   user-select: none;
 }
-.row:hover { border-color: rgba(38, 33, 26, .3); background: rgba(37, 64, 124, .035); }
+.row:hover { border-color: var(--line-soft); background: var(--accent-wash); }
 .grip {
-  color: rgba(38, 33, 26, .45);
+  color: var(--text-faint);
   font-size: 13px;
 }
 .name {
@@ -142,19 +142,19 @@ function commitRename() {
   letter-spacing: .06em;
 }
 .count {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .rename {
   user-select: text;
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 15px;
   font-weight: 600;
-  color: #26211a;
+  color: var(--text);
   background: transparent;
   border: none;
-  border-bottom: 1px solid #25407c;
+  border-bottom: 1px solid var(--accent);
   outline: none;
   padding: 0 2px;
 }
@@ -167,21 +167,21 @@ function commitRename() {
 }
 .row:hover .actions { opacity: 1; }
 .act {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: .08em;
-  color: rgba(37, 64, 124, .8);
+  color: var(--accent-muted);
   background: transparent;
-  border: 1px solid rgba(37, 64, 124, .35);
+  border: 1px solid var(--accent-line);
   padding: 3px 9px;
   cursor: pointer;
   transition: color .15s ease, border-color .15s ease;
 }
-.act:hover { color: #25407c; border-color: #25407c; }
+.act:hover { color: var(--accent); border-color: var(--accent); }
 .act.danger {
-  color: #8c2f22;
-  border-color: #8c2f22;
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 /* SortableJS のドラッグ中プレースホルダ */

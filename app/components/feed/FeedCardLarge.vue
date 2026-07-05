@@ -52,26 +52,26 @@ defineProps<{
 }
 .feature-head-left { display: flex; align-items: baseline; gap: 12px; }
 .badge {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .22em;
-  color: #f5eedd;
-  background: #25407c;
+  color: var(--text-inverse);
+  background: var(--accent);
   padding: 4px 10px 3px;
 }
 .feature-cat {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: .12em;
-  color: #25407c;
+  color: var(--accent);
 }
 .feature-date {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .feature-title {
   margin: 0 0 20px;
@@ -83,12 +83,12 @@ defineProps<{
   cursor: pointer;
   transition: color .2s;
 }
-.feature-title:hover { color: #25407c; }
+.feature-title:hover { color: var(--accent); }
 .feature-body {
   margin: 0;
   font-size: 15px;
   line-height: 2.1;
-  color: rgba(38, 33, 26, .88);
+  color: var(--text-body);
   text-wrap: pretty;
   display: -webkit-box;
   -webkit-line-clamp: 6;
@@ -100,11 +100,11 @@ defineProps<{
   font-size: 13px;
   font-weight: 600;
   letter-spacing: .12em;
-  color: #25407c;
-  border-bottom: 1px solid rgba(37, 64, 124, .55);
+  color: var(--accent);
+  border-bottom: 1px solid var(--accent-line);
   padding-bottom: 2px;
   cursor: pointer;
   transition: border-color .2s;
 }
-.readmore span:hover { border-bottom-color: #25407c; }
+.readmore span:hover { border-bottom-color: var(--accent); }
 </style>

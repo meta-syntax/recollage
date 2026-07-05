@@ -53,27 +53,27 @@ defineEmits<{
   padding: 30px 0 24px;
 }
 .brand-tag {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .34em;
-  color: #25407c;
+  color: var(--accent);
   margin-bottom: 10px;
 }
 .brand-title {
   margin: 0;
-  font-family: 'Bodoni Moda', serif;
+  font-family: var(--font-display);
   font-weight: 850;
   font-size: 64px;
   line-height: 1;
   letter-spacing: .005em;
-  color: #26211a;
+  color: var(--text);
 }
 .brand-sub {
   margin-top: 12px;
   font-size: 13px;
   letter-spacing: .2em;
-  color: rgba(38, 33, 26, .72);
+  color: var(--text-muted);
 }
 .masthead-right {
   display: flex;
@@ -84,25 +84,25 @@ defineEmits<{
 }
 .actions { display: flex; gap: 10px; }
 .btn {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: .14em;
-  color: #25407c;
+  color: var(--accent);
   background: transparent;
-  border: 1px solid #25407c;
+  border: 1px solid var(--accent);
   border-radius: 0;
   padding: 11px 20px;
   cursor: pointer;
   transition: background .2s ease, color .2s ease;
 }
-.btn:hover { background: #25407c; color: #f5eedd; }
-.btn-primary { color: #f5eedd; background: #25407c; }
-.btn-primary:hover { background: #1b2f5e; }
+.btn:hover { background: var(--accent); color: var(--text-inverse); }
+.btn-primary { color: var(--text-inverse); background: var(--accent); }
+.btn-primary:hover { background: var(--accent-strong); }
 .composed {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 </style>

@@ -99,22 +99,22 @@ function onKeydown(e: KeyboardEvent) {
   font-size: 15px;
   font-weight: 700;
   letter-spacing: .3em;
-  color: #25407c;
+  color: var(--accent);
   margin-bottom: 16px;
 }
 .body {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 15px;
   line-height: 1.9;
-  color: #26211a;
+  color: var(--text);
   background: transparent;
-  border: 1px solid rgba(38, 33, 26, .4);
+  border: 1px solid var(--line);
   padding: 14px 16px;
   resize: vertical;
   outline: none;
 }
-.body:focus { border-color: #25407c; }
-.body::placeholder { color: rgba(38, 33, 26, .38); }
+.body:focus { border-color: var(--accent); }
+.body::placeholder { color: var(--text-faint); }
 .foot {
   display: flex;
   justify-content: space-between;
@@ -122,23 +122,23 @@ function onKeydown(e: KeyboardEvent) {
   margin-top: 14px;
 }
 .hint {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .submit {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 13.5px;
   font-weight: 600;
   letter-spacing: .14em;
-  color: #f5eedd;
-  background: #25407c;
-  border: 1px solid #25407c;
+  color: var(--text-inverse);
+  background: var(--accent);
+  border: 1px solid var(--accent);
   padding: 10px 26px;
   cursor: pointer;
   transition: background .2s ease;
 }
-.submit:hover:not(:disabled) { background: #1b2f5e; }
+.submit:hover:not(:disabled) { background: var(--accent-strong); }
 .submit:disabled { opacity: .45; cursor: default; }
 </style>

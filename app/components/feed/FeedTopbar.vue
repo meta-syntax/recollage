@@ -20,11 +20,11 @@ defineProps<{
   justify-content: space-between;
   align-items: baseline;
   padding: 12px 2px 10px;
-  border-bottom: 1px solid rgba(38, 33, 26, .4);
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: .16em;
-  color: rgba(38, 33, 26, .66);
+  color: var(--text-muted);
 }
-.topbar-no { font-weight: 700; color: rgba(38, 33, 26, .8); }
+.topbar-no { font-weight: 700; color: var(--text-muted); }
 </style>

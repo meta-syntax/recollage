@@ -79,8 +79,8 @@ const captureOpen = ref(false)
   margin: 0 auto;
   padding: 0 44px;
   min-height: 100vh;
-  color: #26211a;
-  font-family: 'Shippori Mincho B1', serif;
+  color: var(--text);
+  font-family: var(--font-serif);
 }
 
 /* 一面 */
@@ -88,19 +88,19 @@ const captureOpen = ref(false)
   display: grid;
   grid-template-columns: 1.6fr auto 1fr;
   padding: 36px 0 32px;
-  border-bottom: 1px solid rgba(38, 33, 26, .35);
+  border-bottom: 1px solid var(--line);
 }
 
 /* 縦書き仕切り */
 .divider {
   writing-mode: vertical-rl;
-  border-left: 1px solid rgba(38, 33, 26, .3);
-  border-right: 1px solid rgba(38, 33, 26, .3);
+  border-left: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
   padding: 8px 17px;
   font-size: 12.5px;
   font-weight: 600;
   letter-spacing: .42em;
-  color: rgba(37, 64, 124, .8);
+  color: var(--accent-muted);
 }
 
 /* 中見出し */
@@ -110,7 +110,7 @@ const captureOpen = ref(false)
 .columns {
   columns: 282px;
   column-gap: 42px;
-  column-rule: 1px solid rgba(38, 33, 26, .28);
+  column-rule: 1px solid var(--line-soft);
   padding: 10px 0 18px;
 }
 

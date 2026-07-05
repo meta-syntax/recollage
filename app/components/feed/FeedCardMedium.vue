@@ -29,7 +29,7 @@ defineProps<{
   display: block;
   padding: 4px 0 24px;
   margin-bottom: 24px;
-  border-bottom: 1px solid rgba(38, 33, 26, .25);
+  border-bottom: 1px solid var(--line-soft);
   cursor: pointer;
   color: inherit;
   text-decoration: none;
@@ -42,17 +42,17 @@ defineProps<{
   margin-bottom: 8px;
 }
 .side-cat {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .12em;
-  color: #25407c;
+  color: var(--accent);
 }
 .side-date {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 10.5px;
   letter-spacing: .1em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
 }
 .side-title {
   margin: 0 0 10px;
@@ -62,12 +62,12 @@ defineProps<{
   text-wrap: pretty;
   transition: color .2s;
 }
-.side-article:hover .side-title { color: #25407c; }
+.side-article:hover .side-title { color: var(--accent); }
 .side-body {
   margin: 0;
   font-size: 13.5px;
   line-height: 2;
-  color: rgba(38, 33, 26, .78);
+  color: var(--text-muted);
   text-wrap: pretty;
   display: -webkit-box;
   -webkit-line-clamp: 4;

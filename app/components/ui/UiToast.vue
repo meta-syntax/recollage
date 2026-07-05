@@ -56,17 +56,17 @@ onUnmounted(() => clearTimeout(timer))
   align-items: center;
   gap: 16px;
   padding: 12px 18px;
-  background: #26211a;
-  color: #f5eedd;
-  font-family: 'Shippori Mincho B1', serif;
+  background: var(--surface-inverse);
+  color: var(--text-inverse);
+  font-family: var(--font-serif);
   font-size: 13.5px;
   letter-spacing: .08em;
-  box-shadow: 4px 4px 0 rgba(38, 33, 26, .3);
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 .action {
-  color: #f5eedd;
+  color: var(--text-inverse);
   background: transparent;
-  border: 1px solid rgba(245, 238, 221, .6);
+  border: 1px solid var(--line-inverse);
   padding: 5px 14px;
   font-size: 12.5px;
   font-weight: 600;
@@ -74,14 +74,14 @@ onUnmounted(() => clearTimeout(timer))
   cursor: pointer;
   transition: background .2s ease, color .2s ease;
 }
-.action:hover { background: #f5eedd; color: #26211a; }
+.action:hover { background: var(--surface); color: var(--text); }
 .dismiss {
-  color: rgba(245, 238, 221, .6);
+  color: var(--text-inverse-muted);
   background: transparent;
   border: none;
   font-size: 15px;
   cursor: pointer;
   padding: 0 2px;
 }
-.dismiss:hover { color: #f5eedd; }
+.dismiss:hover { color: var(--text-inverse); }
 </style>

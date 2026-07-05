@@ -40,33 +40,33 @@ const { tree, error, move, addChild, rename, remove } = useCategoryAdmin()
   padding: 30px 0 60px;
 }
 .error {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 12px;
-  color: #8c2f22;
-  border: 1px solid rgba(140, 47, 34, .4);
+  color: var(--danger);
+  border: 1px solid var(--danger-line);
   padding: 10px 14px;
   margin: 0 0 18px;
 }
 .add-root {
-  font-family: 'Shippori Mincho B1', serif;
+  font-family: var(--font-serif);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: .14em;
-  color: #25407c;
+  color: var(--accent);
   background: transparent;
-  border: 1px dashed rgba(37, 64, 124, .5);
+  border: 1px dashed var(--accent-line);
   padding: 10px 22px;
   margin-top: 16px;
   cursor: pointer;
   transition: border-color .2s ease;
 }
-.add-root:hover { border-color: #25407c; }
+.add-root:hover { border-color: var(--accent); }
 .note {
-  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-family: var(--font-sans);
   font-size: 11px;
   line-height: 1.9;
   letter-spacing: .06em;
-  color: rgba(38, 33, 26, .55);
+  color: var(--text-soft);
   margin-top: 26px;
 }
 </style>
