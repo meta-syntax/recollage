@@ -1,6 +1,16 @@
 // 表示用フォーマッタ（feed / entry 両フィーチャーで共有）
 import type { Category } from '~~/shared/types/category'
 
+// 表示タイトルの規約（shared/types/entry.ts）: 書き捨て（title: null）は body 先頭行でフォールバック
+export function displayTitle(title: string | null, body: string): string {
+  if (title) return title
+  const line = body
+    .split('\n')
+    .map(s => s.trim())
+    .find(s => s && s !== '---')
+  return line ?? '無題'
+}
+
 export function fmtDate(iso: string): string {
   const [y, m, d] = iso.slice(0, 10).split('-').map(Number)
   return `${y}年${m}月${d}日`

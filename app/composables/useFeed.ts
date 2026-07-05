@@ -17,6 +17,8 @@ export interface FeedCardVM {
   excerpt: string
   image: string | null
   caption: string | null
+  /** 未整理（categoryId なし）。カードに徴と「整える」導線を出す（ADR-011 面2） */
+  fragment: boolean
 }
 
 const WEEK = ['日', '月', '火', '水', '木', '金', '土']
@@ -39,10 +41,11 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
     categoryLabel: full,
     categoryLeaf: leaf,
     date: fmtDate(e.createdAt),
-    title: e.title ?? '無題',
+    title: displayTitle(e.title, e.body),
     excerpt: excerptOf(e),
     image: e.visual?.type === 'image' ? upscale(e.visual.content) : null,
     caption: e.background ?? null,
+    fragment: e.categoryId === null,
   }
 }
 

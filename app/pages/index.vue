@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { count, issueNo, issueDate, composedAt, navCats, feature, sides, rest, compositionKey, recompose } = useFeed()
+
+const captureOpen = ref(false)
 </script>
 
 <template>
@@ -12,7 +14,9 @@ const { count, issueNo, issueDate, composedAt, navCats, feature, sides, rest, co
     <FeedMasthead
       :composed-at="composedAt"
       @recompose="recompose"
+      @record="captureOpen = true"
     />
+    <EntryCapture v-model:open="captureOpen" />
     <FeedToc :cats="navCats" />
 
     <!-- 誌面本体。組み直しごとに版が下からフェードインして差し替わる -->

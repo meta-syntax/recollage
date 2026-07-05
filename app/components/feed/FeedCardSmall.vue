@@ -16,6 +16,14 @@ defineProps<{
       <span class="col-cat">{{ card.categoryLabel }}</span>
       <span class="col-date">{{ card.date }}</span>
     </div>
+    <!-- 未整理の徴＝編集への入口（ADR-011 面2・面3）。カード本体は詳細への NuxtLink のため click は止める -->
+    <button
+      v-if="card.fragment"
+      class="arrange"
+      @click.prevent.stop="navigateTo(`/entries/${card.id}/edit`)"
+    >
+      未整理 — 整える
+    </button>
     <div class="memo">
       <span class="memo-mark">■</span>
       <p class="memo-text">
@@ -57,6 +65,20 @@ defineProps<{
   letter-spacing: .1em;
   color: rgba(38, 33, 26, .55);
 }
+.arrange {
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: rgba(37, 64, 124, .75);
+  background: transparent;
+  border: 1px dashed rgba(37, 64, 124, .45);
+  padding: 3px 9px;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+.arrange:hover { color: #25407c; border-color: #25407c; }
 .memo { display: flex; gap: 11px; margin-top: 4px; }
 .memo-mark { color: #25407c; font-size: 10px; line-height: 2.6; }
 .memo-text {

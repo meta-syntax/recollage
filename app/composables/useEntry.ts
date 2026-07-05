@@ -37,7 +37,7 @@ export function useEntry(id: string) {
     const label = buildCategoryLabel(data.value!.categories)
     return {
       id: e.id,
-      title: e.title ?? '無題',
+      title: displayTitle(e.title, e.body),
       categoryLabel: label(e.categoryId).full,
       date: fmtDate(e.createdAt),
       image: e.visual?.type === 'image' ? upscale(e.visual.content) : null,

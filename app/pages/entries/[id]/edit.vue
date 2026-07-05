@@ -1,42 +1,27 @@
 <script setup lang="ts">
 const route = useRoute()
-const { entry, notFound } = useEntry(String(route.params.id))
+const id = String(route.params.id)
 </script>
 
 <template>
   <div class="paper">
     <div class="return-bar">
       <NuxtLink
-        to="/"
+        :to="`/entries/${id}`"
         class="return-link"
       >
-        ←── 誌面に戻る
+        ←── 記事に戻る
       </NuxtLink>
+      <span class="mode">整える</span>
     </div>
 
-    <EntryArticle
-      v-if="entry"
-      :entry="entry"
-    />
-
-    <div
-      v-else-if="notFound"
-      class="notfound"
-    >
-      この記録は見つかりませんでした。
-      <NuxtLink
-        to="/"
-        class="return-link"
-      >
-        誌面に戻る
-      </NuxtLink>
-    </div>
+    <EntryEditor :id="id" />
   </div>
 </template>
 
 <style scoped>
 .paper {
-  max-width: 980px;
+  max-width: 780px;
   margin: 0 auto;
   padding: 0 44px;
   min-height: 100vh;
@@ -44,6 +29,9 @@ const { entry, notFound } = useEntry(String(route.params.id))
   font-family: 'Shippori Mincho B1', serif;
 }
 .return-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   padding: 18px 2px 14px;
   border-bottom: 1px solid rgba(38, 33, 26, .4);
 }
@@ -56,14 +44,11 @@ const { entry, notFound } = useEntry(String(route.params.id))
   text-decoration: none;
 }
 .return-link:hover { border-bottom: 1px solid #25407c; }
-.notfound {
-  padding: 80px 0;
-  text-align: center;
-  font-size: 14px;
-  color: rgba(38, 33, 26, .7);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
+.mode {
+  font-family: 'Zen Kaku Gothic New', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3em;
+  color: rgba(38, 33, 26, .55);
 }
 </style>
