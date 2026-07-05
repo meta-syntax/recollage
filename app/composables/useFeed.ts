@@ -46,10 +46,6 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
   }
 }
 
-function newSeed(): string {
-  return Math.random().toString(36).slice(2)
-}
-
 export function useFeed() {
   // ADR-001: データソースはこの1点でだけ選ぶ。フェーズ4は Supabase 実装に差し替え
   const repo: EntryRepository = new MockEntryRepository()
@@ -62,11 +58,8 @@ export function useFeed() {
     return { entries, categories }
   })
 
-  // ADR-008: セッションシードは起動時に1回生成し、スクロール中は不変。
-  // 「組み直す」で seed と基準時刻を更新（=新しい号を編む）。
-  // CSR 前提（ADR-003, ssr:false）なので Math.random / Date.now を直接使える。
-  const seed = ref(newSeed())
-  const composedAtMs = ref(Date.now())
+  // 号の状態（seed・基準時刻）はアプリ寿命 → stores/feed.ts
+  const { seed, composedAtMs, recompose } = useFeedComposition()
 
   // スコア降順（Recency + Resurface + ε）に編成したカードVM列
   const vms = computed<FeedCardVM[]>(() => {
@@ -88,6 +81,12 @@ export function useFeed() {
   })
   const count = computed(() => vms.value.length)
   const issueNo = computed(() => 100 + vms.value.length)
+
+  // マストヘッドに出す組成時刻。号（seed）が同じ間は表示も変わらない
+  const composedAt = computed(() => {
+    const t = new Date(composedAtMs.value)
+    return `${t.getHours()}:${String(t.getMinutes()).padStart(2, '0')}`
+  })
 
   // 目次はカテゴリ定義順で固定（組み直し＝スコア順の変化に影響されない）
   const navCats = computed(() => {
@@ -111,15 +110,11 @@ export function useFeed() {
     return { feature, sides, rest }
   })
 
-  function recompose() {
-    seed.value = newSeed()
-    composedAtMs.value = Date.now()
-  }
-
   return {
     count,
     issueNo,
     issueDate,
+    composedAt,
     navCats,
     feature: computed(() => arranged.value.feature),
     sides: computed(() => arranged.value.sides),

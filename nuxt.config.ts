@@ -4,6 +4,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint'],
+
+  // stores/ = アプリ寿命の共有状態（useState ベース）。composables/ と同様に auto-import する
+  imports: {
+    dirs: ['stores'],
+  },
   devtools: { enabled: true },
 
   app: {

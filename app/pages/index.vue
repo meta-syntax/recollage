@@ -1,19 +1,5 @@
 <script setup lang="ts">
-const { count, issueNo, issueDate, navCats, feature, sides, rest, compositionKey, recompose } = useFeed()
-
-const composedAt = ref('—')
-
-function stamp() {
-  const t = new Date()
-  composedAt.value = `${t.getHours()}:${String(t.getMinutes()).padStart(2, '0')}`
-}
-
-function onRecompose() {
-  recompose()
-  stamp()
-}
-
-onMounted(stamp)
+const { count, issueNo, issueDate, composedAt, navCats, feature, sides, rest, compositionKey, recompose } = useFeed()
 </script>
 
 <template>
@@ -25,7 +11,7 @@ onMounted(stamp)
     />
     <FeedMasthead
       :composed-at="composedAt"
-      @recompose="onRecompose"
+      @recompose="recompose"
     />
     <FeedToc :cats="navCats" />
 
