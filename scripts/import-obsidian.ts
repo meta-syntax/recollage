@@ -12,6 +12,8 @@ import type { Dirent } from 'node:fs'
 import { basename, join, relative } from 'node:path'
 import type { Entry } from '../shared/types/entry.ts'
 import type { Category } from '../shared/types/category.ts'
+import { deriveDensity } from '../shared/utils/deriveDensity.ts'
+import type { Density } from '../shared/utils/deriveDensity.ts'
 
 const DEFAULT_VAULT = '/Users/souta_kobayashi/30_learning/読書アーカイブ'
 const VAULT = process.argv[2] ?? DEFAULT_VAULT
@@ -39,17 +41,23 @@ function stripQuotes(v: string): string {
   return t
 }
 
-/** 簡易 YAML パーサー（フラット key:value・1段ネスト・配列に対応。本 Vault の frontmatter で十分） */
-function parseYaml(text: string): Record<string, unknown> {
+/**
+ * 簡易 YAML パーサー（フラット key:value・1段ネスト・配列に対応。本 Vault の frontmatter で十分）。
+ * 想定外の構造は無音でスキップせず throw する（誤パースが下流のデータ破損として現れるのを防ぐ）。
+ */
+function parseYaml(text: string, source = ''): Record<string, unknown> {
   const root: Record<string, unknown> = {}
   let currentKey: string | null = null
   for (const line of text.split('\n')) {
     if (!line.trim()) continue
     const indent = line.length - line.trimStart().length
     const trimmed = line.trim()
+    if (trimmed.startsWith('#')) continue
     if (indent === 0) {
       const idx = trimmed.indexOf(':')
-      if (idx < 0) continue
+      if (idx < 0) {
+        throw new Error(`frontmatter を解釈できない行（${source}）: "${trimmed}"`)
+      }
       const key = trimmed.slice(0, idx).trim()
       const val = trimmed.slice(idx + 1).trim()
       currentKey = key
@@ -63,7 +71,9 @@ function parseYaml(text: string): Record<string, unknown> {
       }
       else {
         const idx = trimmed.indexOf(':')
-        if (idx < 0) continue
+        if (idx < 0) {
+          throw new Error(`frontmatter を解釈できない行（${source}）: "${trimmed}"`)
+        }
         if (root[currentKey] === null || typeof root[currentKey] !== 'object' || Array.isArray(root[currentKey])) {
           root[currentKey] = {}
         }
@@ -76,10 +86,10 @@ function parseYaml(text: string): Record<string, unknown> {
   return root
 }
 
-function parseFrontmatter(raw: string): { data: Record<string, unknown>, body: string } {
+function parseFrontmatter(raw: string, source = ''): { data: Record<string, unknown>, body: string } {
   const m = raw.match(/^---\n([\s\S]*?)\n---\n?/)
   if (!m) return { data: {}, body: raw }
-  return { data: parseYaml(m[1]), body: raw.slice(m[0].length) }
+  return { data: parseYaml(m[1], source), body: raw.slice(m[0].length) }
 }
 
 /** Markdown の `## 見出し` セクション本文を取り出す（次の `## ` 手前まで） */
@@ -122,13 +132,6 @@ function slug(name: string): string {
   return name.replace(/\.md$/, '').replace(/\s+/g, '-').slice(0, 60)
 }
 
-/** ADR-002 のカード密度導出（検証ログ用の簡易版。本体はフェーズ3で shared/utils に実装） */
-function density(e: Entry): '大' | '中' | '小' {
-  if (e.visual) return '大'
-  if (e.title && e.keyPoints.length > 0) return '中'
-  return '小'
-}
-
 // ── ファイル収集 ─────────────────────────────
 
 function walk(dir: string): string[] {
@@ -152,7 +155,7 @@ function walk(dir: string): string[] {
 
 function parseKindle(path: string): Entry | null {
   const raw = readFileSync(path, 'utf8')
-  const { data, body } = parseFrontmatter(raw)
+  const { data, body } = parseFrontmatter(raw, path)
   const sync = (data['kindle-sync'] ?? {}) as Record<string, string>
   const asin = sync.asin
   if (!asin) return null
@@ -191,7 +194,7 @@ function parseKindle(path: string): Entry | null {
 
 function parseAudible(path: string): Entry | null {
   const raw = readFileSync(path, 'utf8')
-  const { body } = parseFrontmatter(raw)
+  const { body } = parseFrontmatter(raw, path)
   const fileBase = basename(path, '.md')
 
   // タイトル: テンプレ形式 `- 書籍タイトル: ○○` → セクション形式 `## 書籍タイトル` → ファイル名 の順
@@ -238,7 +241,7 @@ function parseAudible(path: string): Entry | null {
 /** Novels / Anime（frontmatter: status/genre/rating/author/started/finished） */
 function parseFrontmatterNote(path: string, categoryId: 'novel' | 'anime'): Entry | null {
   const raw = readFileSync(path, 'utf8')
-  const { data, body } = parseFrontmatter(raw)
+  const { data, body } = parseFrontmatter(raw, path)
   const keyPoints = bullets(section(body, '感想')).slice(0, 4)
   const createdAt
     = dateOr(data.finished) ?? dateOr(data.started) ?? toISO(statSync(path).birthtime)
@@ -276,7 +279,7 @@ function main() {
     const e = parseKindle(f)
     if (!e) continue
     const raw = readFileSync(f, 'utf8')
-    const { data } = parseFrontmatter(raw)
+    const { data } = parseFrontmatter(raw, f)
     const sync = (data['kindle-sync'] ?? {}) as Record<string, string>
     const count = Number(sync.highlightsCount ?? 0)
     if (!kindleByAsin.has(e.id) || count > (kindleHi.get(e.id) ?? -1)) {
@@ -301,10 +304,10 @@ function main() {
 
   // 検証ログ
   const byCat = (id: string) => entries.filter(e => e.categoryId === id).length
-  const byDensity = (d: '大' | '中' | '小') => entries.filter(e => density(e) === d).length
+  const byDensity = (d: Density) => entries.filter(e => deriveDensity(e) === d).length
   console.log(`✅ ${entries.length} entries → ${relative(process.cwd(), OUT_DIR)}/entries.json`)
   console.log(`   カテゴリ別: Kindle=${byCat('kindle')} Audible=${byCat('audible')} 小説=${byCat('novel')} アニメ=${byCat('anime')}`)
-  console.log(`   密度別: 大=${byDensity('大')} 中=${byDensity('中')} 小=${byDensity('小')}`)
+  console.log(`   密度別: 大=${byDensity('L')} 中=${byDensity('M')} 小=${byDensity('S')}`)
   console.log(`   Kindle重複排除: ${kindleFiles.length}ファイル → ${kindleByAsin.size}件`)
 }
 
