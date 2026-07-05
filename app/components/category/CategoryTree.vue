@@ -87,10 +87,11 @@ function commitRename() {
               @click="startRename(element)"
             >改名</button>
             <template v-if="confirmingId === element.id">
+              <!-- 退避が起きる削除は結果を言い切る（ADR-011 面4: エントリは書きつけへ退避） -->
               <button
                 class="act danger"
                 @click="onRemove(element.id); confirmingId = null"
-              >削除する</button>
+              >{{ element.entryCount ? `${element.entryCount}篇を書きつけに戻して削除する` : '削除する' }}</button>
               <button
                 class="act"
                 @click="confirmingId = null"
