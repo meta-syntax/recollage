@@ -26,3 +26,5 @@ logs
 # ローカル実データ（個人の読書ハイライト・感想、Kindle引用＝著作権）。
 # scripts/import-obsidian.ts で再生成する。コミット用のダミーは data/sample/ に置く。
 data/mock
+
+docs/
