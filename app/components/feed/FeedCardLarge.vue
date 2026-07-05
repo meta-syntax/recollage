@@ -7,7 +7,10 @@ defineProps<{
 </script>
 
 <template>
-  <article class="feature">
+  <NuxtLink
+    :to="`/entries/${card.id}`"
+    class="feature"
+  >
     <div class="feature-head">
       <div class="feature-head-left">
         <span class="badge">特集</span>
@@ -30,11 +33,16 @@ defineProps<{
     <div class="readmore">
       <span>つづきを読む ──→</span>
     </div>
-  </article>
+  </NuxtLink>
 </template>
 
 <style scoped>
-.feature { padding-right: 38px; }
+.feature {
+  display: block;
+  padding-right: 38px;
+  color: inherit;
+  text-decoration: none;
+}
 .feature-head {
   display: flex;
   justify-content: space-between;

@@ -8,7 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <article class="col-article">
+  <NuxtLink
+    :to="`/entries/${card.id}`"
+    class="col-article"
+  >
     <div class="col-head">
       <span class="col-cat">{{ card.categoryLabel }}</span>
       <span class="col-date">{{ card.date }}</span>
@@ -19,16 +22,19 @@ defineProps<{
         {{ card.title }}
       </p>
     </div>
-  </article>
+  </NuxtLink>
 </template>
 
 <style scoped>
 .col-article {
+  display: block;
   break-inside: avoid;
   padding: 20px 6px 22px;
   border-bottom: 1px solid rgba(38, 33, 26, .25);
   cursor: pointer;
   transition: background .2s;
+  color: inherit;
+  text-decoration: none;
 }
 .col-article:hover { background: rgba(37, 64, 124, .045); }
 .col-head {

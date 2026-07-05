@@ -9,4 +9,7 @@ import type { Category } from '~~/shared/types/category'
 export interface EntryRepository {
   listEntries(): Promise<Entry[]>
   listCategories(): Promise<Category[]>
+  getEntry(id: string): Promise<Entry | null>
+  /** 閲覧記録。詳細を開いたときのみ呼ぶ（ADR-008: lastViewedAt 更新・viewCount++） */
+  recordView(id: string): Promise<void>
 }

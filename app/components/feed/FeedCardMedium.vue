@@ -7,7 +7,10 @@ defineProps<{
 </script>
 
 <template>
-  <article class="side-article">
+  <NuxtLink
+    :to="`/entries/${card.id}`"
+    class="side-article"
+  >
     <div class="side-head">
       <span class="side-cat">{{ card.categoryLabel }}</span>
       <span class="side-date">{{ card.date }}</span>
@@ -18,15 +21,18 @@ defineProps<{
     <p class="side-body">
       {{ card.excerpt }}
     </p>
-  </article>
+  </NuxtLink>
 </template>
 
 <style scoped>
 .side-article {
+  display: block;
   padding: 4px 0 24px;
   margin-bottom: 24px;
   border-bottom: 1px solid rgba(38, 33, 26, .25);
   cursor: pointer;
+  color: inherit;
+  text-decoration: none;
 }
 .side-head {
   display: flex;

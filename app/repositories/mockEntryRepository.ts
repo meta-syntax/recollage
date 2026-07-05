@@ -2,6 +2,10 @@
 // data/mock/（実データ。著作権物を含むため gitignore）があればそれを、
 // 無ければ data/sample/（コミット済みダミー）を読む。
 // import.meta.glob はマッチ0件でもビルドが通るため、clone 直後・CI でも動く。
+//
+// 閲覧記録（lastViewedAt / viewCount）は localStorage にオーバーレイする。
+// JSON は読み取り専用のまま、読み出し時にマージ。フェーズ4は Supabase 実装で
+// recordView を UPDATE に差し替えるだけで、UI 層は変更不要（ADR-001）。
 
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
@@ -19,12 +23,49 @@ function load<T>(file: string): T {
   return hit[1] as T
 }
 
+const VIEWS_KEY = 'recollage:views'
+
+interface ViewRecord {
+  lastViewedAt: string
+  viewCount: number
+}
+
+function readViews(): Record<string, ViewRecord> {
+  if (typeof localStorage === 'undefined') return {}
+  try {
+    return JSON.parse(localStorage.getItem(VIEWS_KEY) ?? '{}')
+  }
+  catch {
+    return {}
+  }
+}
+
 export class MockEntryRepository implements EntryRepository {
   async listEntries(): Promise<Entry[]> {
-    return load<Entry[]>('entries.json')
+    const views = readViews()
+    return load<Entry[]>('entries.json').map((e) => {
+      const v = views[e.id]
+      return v ? { ...e, lastViewedAt: v.lastViewedAt, viewCount: v.viewCount } : e
+    })
   }
 
   async listCategories(): Promise<Category[]> {
     return load<Category[]>('categories.json')
+  }
+
+  async getEntry(id: string): Promise<Entry | null> {
+    return (await this.listEntries()).find(e => e.id === id) ?? null
+  }
+
+  async recordView(id: string): Promise<void> {
+    if (typeof localStorage === 'undefined') return
+    const entry = await this.getEntry(id)
+    if (!entry) return
+    const views = readViews()
+    views[id] = {
+      lastViewedAt: new Date().toISOString(),
+      viewCount: entry.viewCount + 1,
+    }
+    localStorage.setItem(VIEWS_KEY, JSON.stringify(views))
   }
 }
