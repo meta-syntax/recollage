@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 誌面トークンの primitive 値（paper / ink / indigo）を直接埋め込む（CSS外のため） -->
+  <rect width="64" height="64" fill="#f5eedd"/>
+  <rect x="3.5" y="3.5" width="57" height="57" fill="none" stroke="#26211a" stroke-width="3"/>
+  <rect x="8.5" y="8.5" width="47" height="47" fill="none" stroke="#26211a" stroke-width="1"/>
+  <text x="32" y="43.5" font-family="Bodoni Moda, Bodoni 72, Didot, Georgia, serif" font-weight="800" font-size="34" text-anchor="middle" fill="#26211a">R</text>
+  <rect x="20" y="48" width="24" height="3" fill="#25407c"/>
+</svg>
