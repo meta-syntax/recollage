@@ -42,11 +42,13 @@ function commitRename() {
 </script>
 
 <template>
+  <!-- 行全体がドラッグ対象。操作系（ボタン・改名入力）からのドラッグ開始だけ除外する -->
   <draggable
     :list="nodes"
     group="categories"
     item-key="id"
-    handle=".grip"
+    filter=".act, .rename"
+    :prevent-on-filter="false"
     :empty-insert-threshold="16"
     :animation="150"
     class="tree"
@@ -126,13 +128,13 @@ function commitRename() {
   padding: 8px 10px;
   border: 1px solid transparent;
   background: transparent;
+  cursor: grab;
+  user-select: none;
 }
 .row:hover { border-color: rgba(38, 33, 26, .3); background: rgba(37, 64, 124, .035); }
 .grip {
-  cursor: grab;
   color: rgba(38, 33, 26, .45);
   font-size: 13px;
-  user-select: none;
 }
 .name {
   font-size: 15px;
@@ -145,6 +147,7 @@ function commitRename() {
   color: rgba(38, 33, 26, .55);
 }
 .rename {
+  user-select: text;
   font-family: 'Shippori Mincho B1', serif;
   font-size: 15px;
   font-weight: 600;
