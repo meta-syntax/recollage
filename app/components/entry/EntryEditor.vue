@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 整えの一枚フォーム（ADR-011 面3）。入口3つ（トースト／断片カードの徴／詳細ページ）の共通着地点
+// 整えの一枚フォーム（ADR-011 面3）。入口3つ（トースト／書きつけカードの徴／詳細ページ）の共通着地点
 import type { EntryDraft, EntryRepository } from '~/repositories/entryRepository'
 import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
@@ -108,7 +108,7 @@ async function save() {
         v-model="title"
         type="text"
         class="input"
-        placeholder="空のままなら本文1行目が見出しの代わりになります"
+        placeholder="本文の書き出しがタイトルの代わりになります"
       >
     </label>
 
@@ -122,11 +122,12 @@ async function save() {
     </label>
 
     <label class="field">
-      <span class="label">要点（1行に1つ）</span>
+      <span class="label">要点</span>
       <textarea
         v-model="keyPointsText"
         class="input"
         rows="4"
+        placeholder="1行にひとつ"
       />
     </label>
 
@@ -145,7 +146,7 @@ async function save() {
         v-model="categoryId"
         class="input"
       >
-        <option :value="null">断片のまま</option>
+        <option :value="null">書きつけのまま</option>
         <option
           v-for="opt in categoryOptions"
           :key="opt.id"
@@ -176,7 +177,7 @@ async function save() {
           v-model="visualContent"
           type="text"
           class="input visual-content"
-          placeholder="画像URL"
+          placeholder="画像の URL"
         >
       </div>
       <textarea

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 多段組のカード（密度 L/M）。断片（S）は FeedCardSmall が担う。
+// 多段組のカード（密度 L/M）。書きつけ（S）は FeedCardSmall が担う。
 import type { FeedCardVM } from '~/composables/useFeed'
 
 defineProps<{

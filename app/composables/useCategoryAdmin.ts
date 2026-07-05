@@ -7,7 +7,7 @@ import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 export interface CatNode {
   id: string
   name: string
-  /** 直接所属するエントリ数（削除時に断片へ退避される数） */
+  /** 直接所属するエントリ数（削除時に書きつけへ退避される数） */
   entryCount: number
   children: CatNode[]
 }

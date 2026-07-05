@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 書き捨てキャプチャ（ADR-011 面1）＋保存後の「整える」トースト（面2）。
-// body だけを書いて綴じる。title/カテゴリ等は聞かない（null 保存 → 断片）
+// body だけを書いて綴じる。title/カテゴリ等は聞かない（null 保存 → 書きつけ）
 import type { EntryRepository } from '~/repositories/entryRepository'
 import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
@@ -57,14 +57,14 @@ function onKeydown(e: KeyboardEvent) {
   >
     <div class="capture">
       <div class="head">
-        断片を綴じる
+        書きつけを綴じる
       </div>
       <textarea
         ref="textareaEl"
         v-model="body"
         class="body"
         rows="7"
-        placeholder="いま頭にあることを、そのまま。1行目が見出しの代わりになります"
+        placeholder="いま頭にあることを、そのまま"
         @keydown="onKeydown"
       />
       <div class="foot">
@@ -82,7 +82,7 @@ function onKeydown(e: KeyboardEvent) {
 
   <UiToast
     v-if="savedId"
-    message="断片を綴じました"
+    message="書きつけを綴じました"
     action-label="整える"
     @action="navigateTo(`/entries/${savedId}/edit`)"
     @close="savedId = null"

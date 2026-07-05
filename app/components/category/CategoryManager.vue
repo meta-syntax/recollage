@@ -30,7 +30,7 @@ const { tree, error, move, addChild, rename, remove } = useCategoryAdmin()
 
     <p class="note">
       行を掴んでドラッグすると並べ替え・別の章の中への移動ができます。名前はダブルクリックでも改名できます。
-      エントリの付いた章を削除すると、エントリは「断片」へ戻ります。
+      エントリの付いた章を削除すると、エントリは「書きつけ」へ戻ります。
     </p>
   </div>
 </template>

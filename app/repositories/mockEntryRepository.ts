@@ -191,7 +191,7 @@ export class MockEntryRepository implements EntryRepository {
     if (cats.some(c => c.parentId === id)) {
       throw new Error('子カテゴリがあるため削除できません。先に子を移動または削除してください')
     }
-    // 所属エントリは断片へ退避（ADR-011: カスケード削除はしない）
+    // 所属エントリは書きつけへ退避（ADR-011: カスケード削除はしない）
     const affected = (await this.listEntries()).filter(e => e.categoryId === id)
     for (const e of affected) {
       await this.updateEntry(e.id, {

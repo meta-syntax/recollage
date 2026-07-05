@@ -1,17 +1,24 @@
 <script setup lang="ts">
 const route = useRoute()
 const { entry, notFound } = useEntry(String(route.params.id))
+
+// 誌面から来た場合は履歴で戻る（?cat= の章フィルタを保持）。直接ランディング時のみ / へ
+const router = useRouter()
+function backToFeed() {
+  if (router.options.history.state.back) router.back()
+  else navigateTo('/')
+}
 </script>
 
 <template>
   <div class="paper">
     <div class="return-bar">
-      <NuxtLink
-        to="/"
+      <button
         class="return-link"
+        @click="backToFeed"
       >
         ←── 誌面に戻る
-      </NuxtLink>
+      </button>
       <NuxtLink
         v-if="entry"
         :to="`/entries/${entry.id}/edit`"
@@ -64,6 +71,10 @@ const { entry, notFound } = useEntry(String(route.params.id))
   letter-spacing: .14em;
   color: #25407c;
   text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .return-link:hover { border-bottom: 1px solid #25407c; }
 .notfound {

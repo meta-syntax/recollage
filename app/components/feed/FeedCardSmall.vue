@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 断片（密度 S・書き捨てメモ）。多段組の中で物理的に小さく表示する（ADR-002）。
+// 書きつけ（密度 S・書き捨てメモ）。多段組の中で物理的に小さく表示する（ADR-002）。
 import type { FeedCardVM } from '~/composables/useFeed'
 
 defineProps<{

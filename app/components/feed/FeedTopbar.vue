@@ -10,7 +10,7 @@ defineProps<{
   <div class="topbar">
     <span>{{ issueDate }}</span>
     <span class="topbar-no">第{{ issueNo }}号</span>
-    <span>本日の収録 {{ count }} 篇</span>
+    <span>本日の掲載 {{ count }} 篇</span>
   </div>
 </template>
 

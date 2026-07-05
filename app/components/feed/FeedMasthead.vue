@@ -13,7 +13,7 @@ defineEmits<{
   <header class="masthead">
     <div>
       <div class="brand-tag">
-        じぶんの脳みそを覗ける雑誌
+        じぶんの頭のなかを覗ける雑誌
       </div>
       <h1 class="brand-title">
         Recollage

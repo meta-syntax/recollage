@@ -49,6 +49,9 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
   }
 }
 
+/** 目次で「書きつけ」（categoryId なし）を選ぶときのクエリ値 */
+export const FRAGMENT_CAT = '__fragment__'
+
 export function useFeed() {
   // ADR-001: データソースはこの1点でだけ選ぶ。フェーズ4は Supabase 実装に差し替え
   const repo: EntryRepository = new MockEntryRepository()
@@ -64,11 +67,43 @@ export function useFeed() {
   // 号の状態（seed・基準時刻）はアプリ寿命 → stores/feed.ts
   const { seed, composedAtMs, recompose } = useFeedComposition()
 
+  // 目次の選択カテゴリは URL クエリで同期（リロード・詳細から戻るでも復元される）
+  const route = useRoute()
+  const router = useRouter()
+  const selectedCat = computed<string | null>(() => {
+    const q = route.query.cat
+    return typeof q === 'string' && q ? q : null
+  })
+  function selectCat(id: string | null) {
+    router.replace({ query: { ...route.query, cat: id ?? undefined } })
+  }
+
+  // 選択カテゴリのサブツリー全体を対象にする（読書を選べば Kindle本・Audible も含む）
+  const filterIds = computed<Set<string> | 'fragment' | null>(() => {
+    const sel = selectedCat.value
+    if (!sel) return null
+    if (sel === FRAGMENT_CAT) return 'fragment'
+    const cats = data.value?.categories ?? []
+    const ids = new Set<string>()
+    const walk = (id: string) => {
+      ids.add(id)
+      cats.filter(c => c.parentId === id).forEach(c => walk(c.id))
+    }
+    walk(sel)
+    return ids
+  })
+
   // スコア降順（Recency + Resurface + ε）に編成したカードVM列
   const vms = computed<FeedCardVM[]>(() => {
     if (!data.value) return []
     const label = buildCategoryLabel(data.value.categories)
+    const f = filterIds.value
     return composeFeed(data.value.entries, composedAtMs.value, seed.value)
+      .filter(e => f === null
+        ? true
+        : f === 'fragment'
+          ? e.categoryId === null
+          : e.categoryId !== null && f.has(e.categoryId))
       .map(e => toVM(e, label))
   })
 
@@ -82,8 +117,9 @@ export function useFeed() {
     const [iy, im, id] = maxIso.slice(0, 10).split('-').map(Number)
     return `${iy}年${im}月${id}日 ${WEEK[new Date(iy!, im! - 1, id).getDay()]}曜日`
   })
+  // 収録数は表示中（フィルタ後）の篇数、号数は号全体の総数から（章の切り替えで号は変わらない）
   const count = computed(() => vms.value.length)
-  const issueNo = computed(() => 100 + vms.value.length)
+  const issueNo = computed(() => 100 + (data.value?.entries.length ?? 0))
 
   // マストヘッドに出す組成時刻。号（seed）が同じ間は表示も変わらない
   const composedAt = computed(() => {
@@ -91,15 +127,26 @@ export function useFeed() {
     return `${t.getHours()}:${String(t.getMinutes()).padStart(2, '0')}`
   })
 
-  // 目次はカテゴリ定義順で固定（組み直し＝スコア順の変化に影響されない）
-  const navCats = computed(() => {
+  // 目次はツリー順（親 → sortOrder 順の子）で固定（組み直し＝スコア順の変化に影響されない）。
+  // サブツリーにエントリを持つカテゴリだけを載せる
+  const navCats = computed<{ id: string, label: string }[]>(() => {
     if (!data.value) return []
-    const label = buildCategoryLabel(data.value.categories)
-    const present = new Set(data.value.entries.map(e => label(e.categoryId).leaf))
-    const ordered = data.value.categories
-      .map(c => c.name)
-      .filter(name => present.has(name))
-    if (present.has('断片')) ordered.push('断片')
+    const { categories: cats, entries } = data.value
+    const direct = new Set(entries.map(e => e.categoryId).filter(Boolean))
+    const hasInSubtree = (id: string): boolean =>
+      direct.has(id) || cats.filter(c => c.parentId === id).some(c => hasInSubtree(c.id))
+    const ordered: { id: string, label: string }[] = []
+    const walk = (parentId: string | null) => {
+      cats
+        .filter(c => c.parentId === parentId)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .forEach((c) => {
+          if (hasInSubtree(c.id)) ordered.push({ id: c.id, label: c.name })
+          walk(c.id)
+        })
+    }
+    walk(null)
+    if (entries.some(e => e.categoryId === null)) ordered.push({ id: FRAGMENT_CAT, label: '書きつけ' })
     return ordered
   })
 
@@ -119,11 +166,13 @@ export function useFeed() {
     issueDate,
     composedAt,
     navCats,
+    selectedCat,
+    selectCat,
     feature: computed(() => arranged.value.feature),
     sides: computed(() => arranged.value.sides),
     rest: computed(() => arranged.value.rest),
-    // 誌面の版を識別するキー。組み直しで変わる（誌面差し替えアニメーションのトリガー）
-    compositionKey: computed(() => seed.value),
+    // 誌面の版を識別するキー。組み直し・章の切り替えで変わる（誌面差し替えアニメーションのトリガー）
+    compositionKey: computed(() => `${seed.value}:${selectedCat.value ?? 'all'}`),
     recompose,
   }
 }

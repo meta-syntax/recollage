@@ -1,6 +1,12 @@
 <script setup lang="ts">
 defineProps<{
-  cats: string[]
+  cats: { id: string, label: string }[]
+  /** 選択中のカテゴリID（null = すべて） */
+  active: string | null
+}>()
+
+defineEmits<{
+  select: [id: string | null]
 }>()
 </script>
 
@@ -8,12 +14,22 @@ defineProps<{
   <div class="toc">
     <div class="toc-inner">
       <nav class="toc-nav">
-        <span class="toc-item toc-item--active">すべて</span>
-        <span
-          v-for="c in cats"
-          :key="c"
+        <button
           class="toc-item"
-        >{{ c }}</span>
+          :class="{ 'toc-item--active': active === null }"
+          @click="$emit('select', null)"
+        >
+          すべて
+        </button>
+        <button
+          v-for="c in cats"
+          :key="c.id"
+          class="toc-item"
+          :class="{ 'toc-item--active': active === c.id }"
+          @click="$emit('select', c.id)"
+        >
+          {{ c.label }}
+        </button>
         <NuxtLink
           to="/categories"
           class="toc-item toc-manage"
@@ -38,7 +54,16 @@ defineProps<{
   color: rgba(38, 33, 26, .75);
   overflow-x: auto;
 }
-.toc-item { cursor: pointer; white-space: nowrap; transition: color .15s; }
+.toc-item {
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .15s;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
 .toc-item:hover { color: #25407c; }
 .toc-item--active {
   font-weight: 700;

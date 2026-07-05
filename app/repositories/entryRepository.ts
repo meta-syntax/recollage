@@ -30,6 +30,6 @@ export interface EntryRepository {
   renameCategory(id: string, name: string): Promise<void>
   /** parentId の子リストの index 位置へ移動（同一親内の並べ替えを含む） */
   moveCategory(id: string, parentId: string | null, index: number): Promise<void>
-  /** 子カテゴリを持つ場合は投げる。所属エントリは断片（categoryId: null）へ退避する */
+  /** 子カテゴリを持つ場合は投げる。所属エントリは書きつけ（categoryId: null）へ退避する */
   deleteCategory(id: string): Promise<void>
 }

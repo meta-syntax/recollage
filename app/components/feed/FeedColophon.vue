@@ -11,7 +11,7 @@ defineProps<{
         ── 本日の誌面は、ここまで ──
       </div>
       <div class="colophon-note">
-        Recollage はあなたの {{ count }} 篇の記録からこの誌面を編みました。組み直すたび、別の出会いがあります。
+        Recollage はあなたの {{ count }} 篇の記録からこの誌面を編みました。組み直すたび、誌面は別の表情を見せます。
       </div>
     </div>
   </footer>

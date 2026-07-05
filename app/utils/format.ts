@@ -24,7 +24,7 @@ export function upscale(url: string): string {
 export function buildCategoryLabel(cats: Category[]) {
   const byId = new Map(cats.map(c => [c.id, c]))
   return (id: string | null): { full: string, leaf: string } => {
-    if (!id) return { full: '断片', leaf: '断片' }
+    if (!id) return { full: '書きつけ', leaf: '書きつけ' }
     const c = byId.get(id)
     if (!c) return { full: id, leaf: id }
     if (c.parentId && byId.has(c.parentId)) {
