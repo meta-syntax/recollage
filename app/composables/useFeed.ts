@@ -36,8 +36,8 @@ function buildCategoryLabel(cats: Category[]) {
 }
 
 function fmtDate(iso: string): string {
-  const [, m, d] = iso.slice(0, 10).split('-').map(Number)
-  return `${m}月${d}日`
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number)
+  return `${y}年${m}月${d}日`
 }
 
 // Amazon の書影サムネ(_SY160 等)を大きめサイズに差し替える。
@@ -110,7 +110,18 @@ export function useFeed() {
   })
   const count = computed(() => vms.value.length)
   const issueNo = computed(() => 100 + vms.value.length)
-  const navCats = computed(() => [...new Set(vms.value.map(v => v.categoryLeaf))])
+
+  // 目次はカテゴリ定義順で固定（組み直し＝スコア順の変化に影響されない）
+  const navCats = computed(() => {
+    if (!data.value) return []
+    const label = buildCategoryLabel(data.value.categories)
+    const present = new Set(data.value.entries.map(e => label(e.categoryId).leaf))
+    const ordered = data.value.categories
+      .map(c => c.name)
+      .filter(name => present.has(name))
+    if (present.has('断片')) ordered.push('断片')
+    return ordered
+  })
 
   // 誌面の振り分け: スコア上位の大カードを特集に、中カードを両袖に
   const arranged = computed(() => {
