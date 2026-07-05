@@ -6,9 +6,11 @@
 // 書き込み系（閲覧記録・新規作成・編集）はすべて localStorage にオーバーレイする。
 // JSON は読み取り専用のまま、読み出し時にマージ。フェーズ4は Supabase 実装で
 // 各メソッドを INSERT/UPDATE に差し替えるだけで、UI 層は変更不要（ADR-001）。
-//   recollage:views   閲覧記録（lastViewedAt / viewCount）
-//   recollage:created アプリ内で作成したエントリ（Entry 全体）
-//   recollage:edits   JSON 由来エントリへの編集パッチ（EntryDraft + updatedAt）
+//   recollage:views      閲覧記録（lastViewedAt / viewCount）
+//   recollage:created    アプリ内で作成したエントリ（Entry 全体）
+//   recollage:edits      JSON 由来エントリへの編集パッチ（EntryDraft + updatedAt）
+//   recollage:categories カテゴリツリーの全量スナップショット（初回変更時に JSON から複製）
+//     ※ スナップショット方式のため、以降 JSON 側にカテゴリを足しても反映されない（モック負債）
 
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
@@ -29,6 +31,7 @@ function load<T>(file: string): T {
 const VIEWS_KEY = 'recollage:views'
 const CREATED_KEY = 'recollage:created'
 const EDITS_KEY = 'recollage:edits'
+const CATS_KEY = 'recollage:categories'
 
 interface ViewRecord {
   lastViewedAt: string
@@ -76,7 +79,7 @@ export class MockEntryRepository implements EntryRepository {
   }
 
   async listCategories(): Promise<Category[]> {
-    return load<Category[]>('categories.json')
+    return readStorage<Category[] | null>(CATS_KEY, null) ?? load<Category[]>('categories.json')
   }
 
   async getEntry(id: string): Promise<Entry | null> {
@@ -128,5 +131,83 @@ export class MockEntryRepository implements EntryRepository {
     edits[id] = { ...draft, updatedAt: now }
     localStorage.setItem(EDITS_KEY, JSON.stringify(edits))
     return { ...base, ...draft, updatedAt: now }
+  }
+
+  /** カテゴリの全量スナップショットを取得（未変更なら JSON から複製）して書き戻す */
+  private async mutateCategories(fn: (cats: Category[]) => Category[]): Promise<Category[]> {
+    const cats = fn(await this.listCategories())
+    localStorage.setItem(CATS_KEY, JSON.stringify(cats))
+    return cats
+  }
+
+  /** parentId の兄弟を sortOrder 順に取り出し、0..n の連番を振り直す（ADR-011: 兄弟全件書き換え） */
+  private static renumber(cats: Category[], parentId: string | null): void {
+    cats
+      .filter(c => c.parentId === parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .forEach((c, i) => {
+        c.sortOrder = i
+      })
+  }
+
+  async createCategory(name: string, parentId: string | null): Promise<Category> {
+    const cat: Category = { id: `cat-${crypto.randomUUID()}`, name, parentId, sortOrder: Number.MAX_SAFE_INTEGER }
+    await this.mutateCategories((cats) => {
+      const next = [...cats, cat]
+      MockEntryRepository.renumber(next, parentId)
+      return next
+    })
+    return cat
+  }
+
+  async renameCategory(id: string, name: string): Promise<void> {
+    await this.mutateCategories(cats =>
+      cats.map(c => (c.id === id ? { ...c, name } : c)),
+    )
+  }
+
+  async moveCategory(id: string, parentId: string | null, index: number): Promise<void> {
+    await this.mutateCategories((cats) => {
+      const next = cats.map(c => ({ ...c }))
+      const target = next.find(c => c.id === id)
+      if (!target) throw new Error(`カテゴリが見つかりません: ${id}`)
+      const oldParentId = target.parentId
+      // 新しい兄弟列の index 位置に割り込ませてから、旧・新両方の兄弟列を連番に振り直す
+      target.parentId = parentId
+      const siblings = next
+        .filter(c => c.parentId === parentId && c.id !== id)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+      siblings.splice(index, 0, target)
+      siblings.forEach((c, i) => {
+        c.sortOrder = i
+      })
+      if (oldParentId !== parentId) MockEntryRepository.renumber(next, oldParentId)
+      return next
+    })
+  }
+
+  async deleteCategory(id: string): Promise<void> {
+    const cats = await this.listCategories()
+    if (cats.some(c => c.parentId === id)) {
+      throw new Error('子カテゴリがあるため削除できません。先に子を移動または削除してください')
+    }
+    // 所属エントリは断片へ退避（ADR-011: カスケード削除はしない）
+    const affected = (await this.listEntries()).filter(e => e.categoryId === id)
+    for (const e of affected) {
+      await this.updateEntry(e.id, {
+        title: e.title,
+        body: e.body,
+        keyPoints: e.keyPoints,
+        background: e.background,
+        categoryId: null,
+        visual: e.visual,
+      })
+    }
+    const parentId = cats.find(c => c.id === id)?.parentId ?? null
+    await this.mutateCategories((current) => {
+      const next = current.filter(c => c.id !== id)
+      MockEntryRepository.renumber(next, parentId)
+      return next
+    })
   }
 }

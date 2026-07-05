@@ -14,6 +14,10 @@ defineProps<{
           :key="c"
           class="toc-item"
         >{{ c }}</span>
+        <NuxtLink
+          to="/categories"
+          class="toc-item toc-manage"
+        >章立てを整える ✎</NuxtLink>
       </nav>
     </div>
   </div>
@@ -41,5 +45,11 @@ defineProps<{
   color: #25407c;
   border-bottom: 2px solid #25407c;
   padding-bottom: 3px;
+}
+.toc-manage {
+  margin-left: auto;
+  color: rgba(38, 33, 26, .5);
+  text-decoration: none;
+  font-size: 11.5px;
 }
 </style>

@@ -25,4 +25,11 @@ export interface EntryRepository {
   /** 書き捨てキャプチャ・整えの入口（ADR-011 面1・面3） */
   createEntry(draft: EntryDraft): Promise<Entry>
   updateEntry(id: string, draft: EntryDraft): Promise<Entry>
+  /** カテゴリ管理（ADR-011 面4）。並び順は sortOrder 整数連番のまま兄弟全件書き換え */
+  createCategory(name: string, parentId: string | null): Promise<Category>
+  renameCategory(id: string, name: string): Promise<void>
+  /** parentId の子リストの index 位置へ移動（同一親内の並べ替えを含む） */
+  moveCategory(id: string, parentId: string | null, index: number): Promise<void>
+  /** 子カテゴリを持つ場合は投げる。所属エントリは断片（categoryId: null）へ退避する */
+  deleteCategory(id: string): Promise<void>
 }
