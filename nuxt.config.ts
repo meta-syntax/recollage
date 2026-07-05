@@ -21,6 +21,12 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+
+  // ADR-003: デフォルトCSR。公開共有面を作ったら該当ルートのみ prerender / ssr 化
+  routeRules: {
+    '/**': { ssr: false },
+  },
+
   compatibilityDate: '2025-07-15',
 
   vite: {

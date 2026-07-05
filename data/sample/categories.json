@@ -1,0 +1,8 @@
+[
+  { "id": "reading", "name": "読書", "parentId": null, "sortOrder": 0 },
+  { "id": "kindle", "name": "Kindle本", "parentId": "reading", "sortOrder": 0 },
+  { "id": "audible", "name": "Audible", "parentId": "reading", "sortOrder": 1 },
+  { "id": "story", "name": "物語", "parentId": null, "sortOrder": 1 },
+  { "id": "novel", "name": "小説", "parentId": "story", "sortOrder": 0 },
+  { "id": "anime", "name": "アニメ", "parentId": "story", "sortOrder": 1 }
+]

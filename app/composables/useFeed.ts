@@ -1,11 +1,12 @@
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
-import entriesJson from '~~/data/mock/entries.json'
-import categoriesJson from '~~/data/mock/categories.json'
+import type { Density } from '~~/shared/utils/deriveDensity'
+import { deriveDensity } from '~~/shared/utils/deriveDensity'
+import { composeFeed } from '~~/shared/utils/feedScore'
+import type { EntryRepository } from '~/repositories/entryRepository'
+import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
-// カード密度（ADR-002）。保存値ではなくフィールド充足から導出する。
-// 大(L)=書影あり / 小(S)=本文が短い断片 / 中(M)=その他。
-export type Density = 'L' | 'M' | 'S'
+export type { Density }
 
 export interface FeedCardVM {
   id: string
@@ -32,12 +33,6 @@ function buildCategoryLabel(cats: Category[]) {
     }
     return { full: c.name, leaf: c.name }
   }
-}
-
-function deriveDensity(e: Entry): Density {
-  if (e.visual?.type === 'image') return 'L'
-  if (e.body.length < 250) return 'S'
-  return 'M'
 }
 
 function fmtDate(iso: string): string {
@@ -73,30 +68,53 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
   }
 }
 
+function newSeed(): string {
+  return Math.random().toString(36).slice(2)
+}
+
 export function useFeed() {
-  const cats = categoriesJson as unknown as Category[]
-  const entries = entriesJson as unknown as Entry[]
-  const label = buildCategoryLabel(cats)
-  const vms = entries.map(e => toVM(e, label))
+  // ADR-001: データソースはこの1点でだけ選ぶ。フェーズ4は Supabase 実装に差し替え
+  const repo: EntryRepository = new MockEntryRepository()
 
-  // 号情報はデータから決定論的に算出（new Date(now) を使わずハイドレーション差異を避ける）
-  const maxIso = entries.reduce(
-    (a, e) => (e.createdAt > a ? e.createdAt : a),
-    entries[0]?.createdAt ?? '2026-01-01',
-  )
-  const [iy, im, id] = maxIso.slice(0, 10).split('-').map(Number)
-  const issueDate = `${iy}年${im}月${id}日 ${WEEK[new Date(iy, im - 1, id).getDay()]}曜日`
-  const issueNo = 100 + vms.length
-  const navCats = [...new Set(vms.map(v => v.categoryLeaf))]
+  const { data } = useAsyncData('feed', async () => {
+    const [entries, categories] = await Promise.all([
+      repo.listEntries(),
+      repo.listCategories(),
+    ])
+    return { entries, categories }
+  })
 
-  // 初期順序は決定論的（createdAt 降順のまま）。再編成はクライアントのみで実行。
-  const order = ref<string[]>(vms.map(v => v.id))
+  // ADR-008: セッションシードは起動時に1回生成し、スクロール中は不変。
+  // 「組み直す」で seed と基準時刻を更新（=新しい号を編む）。
+  // CSR 前提（ADR-003, ssr:false）なので Math.random / Date.now を直接使える。
+  const seed = ref(newSeed())
+  const composedAtMs = ref(Date.now())
 
+  // スコア降順（Recency + Resurface + ε）に編成したカードVM列
+  const vms = computed<FeedCardVM[]>(() => {
+    if (!data.value) return []
+    const label = buildCategoryLabel(data.value.categories)
+    return composeFeed(data.value.entries, composedAtMs.value, seed.value)
+      .map(e => toVM(e, label))
+  })
+
+  // 号情報はデータから決定論的に算出（最新エントリの作成日を発行日に見立てる）
+  const issueDate = computed(() => {
+    const entries = data.value?.entries ?? []
+    const maxIso = entries.reduce(
+      (a, e) => (e.createdAt > a ? e.createdAt : a),
+      entries[0]?.createdAt ?? '2026-01-01',
+    )
+    const [iy, im, id] = maxIso.slice(0, 10).split('-').map(Number)
+    return `${iy}年${im}月${id}日 ${WEEK[new Date(iy!, im! - 1, id).getDay()]}曜日`
+  })
+  const count = computed(() => vms.value.length)
+  const issueNo = computed(() => 100 + vms.value.length)
+  const navCats = computed(() => [...new Set(vms.value.map(v => v.categoryLeaf))])
+
+  // 誌面の振り分け: スコア上位の大カードを特集に、中カードを両袖に
   const arranged = computed(() => {
-    const byId = new Map(vms.map(v => [v.id, v]))
-    const list = order.value
-      .map(oid => byId.get(oid))
-      .filter((v): v is FeedCardVM => !!v)
+    const list = vms.value
     const feature = list.find(v => v.density === 'L') ?? list[0] ?? null
     const sides = list.filter(v => v.id !== feature?.id && v.density === 'M').slice(0, 2)
     const used = new Set<string>([feature?.id ?? '', ...sides.map(s => s.id)])
@@ -105,16 +123,12 @@ export function useFeed() {
   })
 
   function recompose() {
-    const a = [...order.value]
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[a[i], a[j]] = [a[j], a[i]]
-    }
-    order.value = a
+    seed.value = newSeed()
+    composedAtMs.value = Date.now()
   }
 
   return {
-    count: vms.length,
+    count,
     issueNo,
     issueDate,
     navCats,
