@@ -2,6 +2,19 @@
 const { count, issueNo, issueDate, composedAt, navCats, selectedCat, selectCat, feature, sides, rest, compositionKey, recompose } = useFeed()
 
 const captureOpen = ref(false)
+
+const taglines = [
+  '過去の自分と、出会い直す。',
+  '忘れた頃に、届く一篇。',
+  '記憶は沈む。だから、掬う。',
+  '書いたままで、終わらせない。',
+]
+// compositionKey は `${seed}:${selectedCat}` の文字列。号ごとに文言を変えるため
+// 文字列を数値へ畳んで（簡易ハッシュ）配列インデックスにする
+const tagline = computed(() => {
+  const hash = [...compositionKey.value].reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) | 0, 0)
+  return taglines[Math.abs(hash) % taglines.length]
+})
 </script>
 
 <template>
@@ -38,7 +51,7 @@ const captureOpen = ref(false)
           />
 
           <div class="divider">
-            過去の自分と、出会い直す。
+            {{ tagline }}
           </div>
 
           <div class="sides">

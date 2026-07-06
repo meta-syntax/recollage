@@ -28,6 +28,15 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // ADR-013: データソース切替と Supabase 接続情報。NUXT_PUBLIC_* で上書き
+  runtimeConfig: {
+    public: {
+      dataSource: 'mock', // 'mock' | 'supabase'。NUXT_PUBLIC_DATA_SOURCE で上書き
+      supabaseUrl: '',
+      supabaseAnonKey: '',
+    },
+  },
+
   // ADR-003: デフォルトCSR。公開共有面を作ったら該当ルートのみ prerender / ssr 化
   routeRules: {
     '/**': { ssr: false },

@@ -1,6 +1,4 @@
 import type { BodyBlock } from '~/utils/parseBody'
-import type { EntryRepository } from '~/repositories/entryRepository'
-import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
 export interface EntryDetailVM {
   id: string
@@ -16,8 +14,8 @@ export interface EntryDetailVM {
 }
 
 export function useEntry(id: string) {
-  // ADR-001: データソースはこの1点でだけ選ぶ
-  const repo: EntryRepository = new MockEntryRepository()
+  // ADR-001: データソースはこの1点でだけ選ぶ（ADR-013: ファクトリに一本化）
+  const repo = useEntryRepository()
 
   const { data, status } = useAsyncData(`entry:${id}`, async () => {
     const [entry, categories] = await Promise.all([

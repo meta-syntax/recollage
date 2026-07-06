@@ -1,8 +1,6 @@
 // カテゴリ管理（ADR-011 面4）の状態とアクション。/categories 面の頭脳
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
-import type { EntryRepository } from '~/repositories/entryRepository'
-import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
 export interface CatNode {
   id: string
@@ -31,8 +29,8 @@ function buildTree(cats: Category[], entries: Entry[]): CatNode[] {
 }
 
 export function useCategoryAdmin() {
-  // ADR-001: データソースはこの1点でだけ選ぶ
-  const repo: EntryRepository = new MockEntryRepository()
+  // ADR-001: データソースはこの1点でだけ選ぶ（ADR-013: ファクトリに一本化）
+  const repo = useEntryRepository()
 
   const { data, refresh } = useAsyncData('category-admin', async () => {
     const [categories, entries] = await Promise.all([

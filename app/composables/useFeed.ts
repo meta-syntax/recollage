@@ -2,8 +2,6 @@ import type { Entry } from '~~/shared/types/entry'
 import type { Density } from '~~/shared/utils/deriveDensity'
 import { deriveDensity } from '~~/shared/utils/deriveDensity'
 import { composeFeed } from '~~/shared/utils/feedScore'
-import type { EntryRepository } from '~/repositories/entryRepository'
-import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
 export type { Density }
 
@@ -55,8 +53,8 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
 export const FRAGMENT_CAT = '__fragment__'
 
 export function useFeed() {
-  // ADR-001: データソースはこの1点でだけ選ぶ。フェーズ4は Supabase 実装に差し替え
-  const repo: EntryRepository = new MockEntryRepository()
+  // ADR-001: データソースはこの1点でだけ選ぶ（ADR-013: ファクトリに一本化）
+  const repo = useEntryRepository()
 
   const { data } = useAsyncData('feed', async () => {
     const [entries, categories] = await Promise.all([
