@@ -19,6 +19,12 @@ defineProps<{
       :caption="card.caption"
       dense
     />
+    <UiMermaid
+      v-else-if="card.mermaid"
+      :code="card.mermaid"
+      :caption="card.caption"
+      dense
+    />
     <div class="col-head">
       <span class="col-cat">{{ card.categoryLabel }}</span>
       <span class="col-date">{{ card.date }}</span>

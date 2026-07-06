@@ -17,7 +17,10 @@ defineProps<{
       {{ entry.title }}
     </h1>
 
-    <div class="article-layout">
+    <div
+      class="article-layout"
+      :class="{ 'article-layout--single': entry.mermaid && !entry.image }"
+    >
       <div class="article-main">
         <div
           v-if="entry.keyPoints.length"
@@ -35,6 +38,14 @@ defineProps<{
             </li>
           </ul>
         </div>
+
+        <!-- 図解は aside だと占有幅が小さく読めない。書影が記事冒頭の右上に立つのと同様、冒頭に全幅で立てる -->
+        <UiMermaid
+          v-if="entry.mermaid"
+          :code="entry.mermaid"
+          :caption="entry.caption"
+          tall
+        />
 
         <div class="body">
           <template
@@ -132,6 +143,12 @@ defineProps<{
   display: grid;
   grid-template-columns: 1.7fr 1fr;
   gap: 46px;
+}
+/* 図解エントリは aside が無い。空の右カラムを出さず単一カラムにし、行長が間延びしない幅に整える */
+.article-layout--single { grid-template-columns: 1fr; }
+.article-layout--single .article-main {
+  max-width: 760px;
+  margin-inline: auto;
 }
 @media (max-width: 860px) {
   .article-layout { grid-template-columns: 1fr; }

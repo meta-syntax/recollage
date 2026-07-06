@@ -14,6 +14,7 @@
   --font-serif: 'Shippori Mincho B1', serif;
   --font-sans: 'Zen Kaku Gothic New', sans-serif;
   --font-display: 'Bodoni Moda', serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
 
 /* ── Semantic層（ADR-007）──

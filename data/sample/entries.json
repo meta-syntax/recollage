@@ -194,5 +194,19 @@
     "updatedAt": "2026-06-13T10:00:00.000Z",
     "lastViewedAt": null,
     "viewCount": 0
+  },
+  {
+    "id": "sample-015",
+    "title": "学びが再利用される流れ",
+    "body": "取り込み → 分類 → 再想起 → 制作 の循環に乗った知識だけが複利で効く。図はその最小ループ。\n\n流れのどこかで詰まると、記録は単なる在庫になる。",
+    "keyPoints": ["知識は循環に乗って初めて複利になる", "詰まった箇所が単利化のボトルネック"],
+    "background": "ナレッジ運用メモのダミー。サンプルデータ",
+    "categoryId": "kindle",
+    "visual": { "type": "mermaid", "content": "graph TD; A[取り込み] --> B[分類]; B --> C[再想起]; C --> D[制作]; D --> A" },
+    "source": { "kind": "obsidian", "path": "sample/knowledge-loop.md", "importedAt": "2026-06-14T00:00:00.000Z" },
+    "createdAt": "2026-06-15T09:00:00.000Z",
+    "updatedAt": "2026-06-15T09:00:00.000Z",
+    "lastViewedAt": null,
+    "viewCount": 0
   }
 ]

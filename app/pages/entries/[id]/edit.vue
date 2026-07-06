@@ -1,17 +1,25 @@
 <script setup lang="ts">
 const route = useRoute()
 const id = String(route.params.id)
+
+// 詳細から来た場合は履歴で戻る。push で詳細を積み直すと、
+// 詳細側の「誌面に戻る」（履歴 back）が編集画面に着地してしまう
+const router = useRouter()
+function backToArticle() {
+  if (router.options.history.state.back === `/entries/${id}`) router.back()
+  else navigateTo(`/entries/${id}`, { replace: true })
+}
 </script>
 
 <template>
   <div class="paper">
     <div class="return-bar">
-      <NuxtLink
-        :to="`/entries/${id}`"
+      <button
         class="return-link"
+        @click="backToArticle"
       >
         ←── 記事に戻る
-      </NuxtLink>
+      </button>
       <span class="mode">整える</span>
     </div>
 
@@ -42,6 +50,10 @@ const id = String(route.params.id)
   letter-spacing: .14em;
   color: var(--accent);
   text-decoration: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .return-link:hover { border-bottom: 1px solid var(--accent); }
 .mode {

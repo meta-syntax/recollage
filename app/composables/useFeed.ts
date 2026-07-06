@@ -16,6 +16,7 @@ export interface FeedCardVM {
   title: string
   excerpt: string
   image: string | null
+  mermaid: string | null
   caption: string | null
   /** 未整理（categoryId なし）。カードに徴と「整える」導線を出す（ADR-011 面2） */
   fragment: boolean
@@ -44,6 +45,7 @@ function toVM(e: Entry, label: ReturnType<typeof buildCategoryLabel>): FeedCardV
     title: displayTitle(e.title, e.body),
     excerpt: excerptOf(e),
     image: e.visual?.type === 'image' ? upscale(e.visual.content) : null,
+    mermaid: e.visual?.type === 'mermaid' ? e.visual.content : null,
     caption: e.background ?? null,
     fragment: e.categoryId === null,
   }

@@ -27,6 +27,11 @@ defineProps<{
       :alt="card.title"
       :caption="card.caption"
     />
+    <UiMermaid
+      v-else-if="card.mermaid"
+      :code="card.mermaid"
+      :caption="card.caption"
+    />
     <p class="feature-body">
       {{ card.excerpt }}
     </p>

@@ -61,6 +61,10 @@ const categoryOptions = computed(() => {
 const notFound = computed(() => status.value === 'success' && !data.value?.entry)
 const saving = ref(false)
 
+// 保存後の詳細への遷移も「記事に戻る」と同じく履歴を積まない。
+// push だと詳細が積み重なり、詳細側の「誌面に戻る」（履歴 back）が編集画面に着地してしまう
+const router = useRouter()
+
 async function save() {
   if (saving.value || !body.value.trim()) return
   saving.value = true
@@ -81,7 +85,8 @@ async function save() {
       refreshNuxtData(`entry:${props.id}`),
       refreshNuxtData(`entry-edit:${props.id}`),
     ])
-    navigateTo(`/entries/${props.id}`)
+    if (router.options.history.state.back === `/entries/${props.id}`) router.back()
+    else navigateTo(`/entries/${props.id}`, { replace: true })
   }
   finally {
     saving.value = false
@@ -180,12 +185,14 @@ async function save() {
           placeholder="画像の URL"
         >
       </div>
-      <textarea
+      <UiCodeEditor
         v-if="visualType === 'mermaid'"
         v-model="visualContent"
-        class="input"
-        rows="6"
         placeholder="Mermaid コード"
+      />
+      <EntryMermaidPreview
+        v-if="visualType === 'mermaid'"
+        :code="visualContent"
       />
     </div>
 

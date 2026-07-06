@@ -8,6 +8,7 @@ export interface EntryDetailVM {
   categoryLabel: string
   date: string
   image: string | null
+  mermaid: string | null
   caption: string | null
   keyPoints: string[]
   background: string | null
@@ -41,6 +42,7 @@ export function useEntry(id: string) {
       categoryLabel: label(e.categoryId).full,
       date: fmtDate(e.createdAt),
       image: e.visual?.type === 'image' ? upscale(e.visual.content) : null,
+      mermaid: e.visual?.type === 'mermaid' ? e.visual.content : null,
       caption: e.background ?? null,
       keyPoints: e.keyPoints,
       background: e.background,
