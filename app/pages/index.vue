@@ -41,7 +41,7 @@ const tagline = computed(() => {
       v-if="loading"
       class="composing"
     >
-      組版中……
+      <UiLoadingDots />
     </div>
 
     <!-- 誌面本体。組み直しごとに版が下からフェードインして差し替わる -->
@@ -108,12 +108,10 @@ const tagline = computed(() => {
   font-family: var(--font-serif);
 }
 
-/* 初回ロード中の組版表示 */
+/* 初回ロード中の表示（ドットの色は color を継承） */
 .composing {
   padding: 140px 0;
   text-align: center;
-  font-size: 12.5px;
-  letter-spacing: .3em;
   color: var(--text-soft);
 }
 

@@ -51,7 +51,7 @@ function backToFeed() {
       v-else
       class="loading"
     >
-      ……
+      <UiLoadingDots />
     </div>
   </div>
 </template>
@@ -98,8 +98,6 @@ function backToFeed() {
 .loading {
   padding: 120px 0;
   text-align: center;
-  font-size: 12.5px;
-  letter-spacing: .3em;
   color: var(--text-soft);
 }
 </style>

@@ -90,7 +90,7 @@ function snippetOf(h: SearchHit): string {
         v-if="searching"
         class="index-status"
       >
-        ……
+        <UiLoadingDots />
       </div>
       <ul
         v-else-if="hits.length"

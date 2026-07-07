@@ -1,0 +1,33 @@
+<!-- CSR（ADR-003）の起動待ち画面。JS バンドル到着前からシェル HTML に埋め込まれて表示され、
+     アプリのマウント完了で自動的に消える。UiLoadingDots.vue と同じドット明滅にして
+     白画面 → アプリ内ローディングの断絶をなくす。CSS 変数には依存しない（値は main.css から複製） -->
+<div class="nuxt-loading">
+  <span class="nl-d"></span><span class="nl-d"></span><span class="nl-d"></span>
+</div>
+<style>
+.nuxt-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f5eedd;
+}
+.nl-d {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(38, 33, 26, .55);
+  animation: nl-breath 1.2s ease-in-out infinite;
+}
+.nl-d:nth-child(2) { animation-delay: .2s; }
+.nl-d:nth-child(3) { animation-delay: .4s; }
+@keyframes nl-breath {
+  0%, 100% { opacity: .2; transform: scale(.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-d { animation: none; opacity: .6; }
+}
+</style>
