@@ -27,4 +27,9 @@ logs
 # scripts/import-obsidian.ts で再生成する。コミット用のダミーは data/sample/ に置く。
 data/mock
 
+# DB バックアップ（npm run export:db の出力。実データを含むためコミットしない）
+data/export
+
+# 設計文書（ADR・負債台帳等）は意図的にこのリポジトリへ載せない（2026-07-07 確認）。
+# 版管理・バックアップは docs/ 内の独立プライベートリポ（recollage-docs）が担う
 docs/

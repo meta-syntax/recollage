@@ -1,0 +1,22 @@
+# 品質ゲート（mock-debt #3 の返済）: lint / typecheck / test を push・PR ごとに機械実行する。
+# データ源は既定の mock（data/sample フォールバック）なので secrets 不要。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx nuxt typecheck
+      - run: npm test
