@@ -4,8 +4,8 @@
 import { describe, expect, it } from 'vitest'
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
-import type { CategoryRow, EntryRow } from './supabaseEntryRepository'
-import { toCategory, toCategoryRow, toEntry, toEntryRow } from './supabaseEntryRepository'
+import type { CategoryRow, EntryRow, MatchRow } from './supabaseEntryRepository'
+import { mergeSearchHits, toCategory, toCategoryRow, toEntry, toEntryRow } from './supabaseEntryRepository'
 
 describe('toEntry / toEntryRow', () => {
   const full: Entry = {
@@ -102,5 +102,41 @@ describe('toCategory / toCategoryRow', () => {
   it('row → domain 起点でも往復で保存される', () => {
     const row: CategoryRow = { id: 'cat-3', name: 'x', parent_id: null, sort_order: 1 }
     expect(toCategoryRow(toCategory(row))).toEqual(row)
+  })
+})
+
+describe('mergeSearchHits（ADR-016: 索引のハイブリッドマージ）', () => {
+  const t = (id: string): Omit<MatchRow, 'similarity'> =>
+    ({ id, title: `T-${id}`, body: `body-${id}`, category_id: null })
+  const v = (id: string, similarity: number): MatchRow =>
+    ({ ...t(id), similarity })
+
+  it('タイトル一致が先頭、ベクトルヒットが後続に並ぶ', () => {
+    const hits = mergeSearchHits([t('a')], [v('b', 0.8)], 8)
+    expect(hits.map(h => h.id)).toEqual(['a', 'b'])
+    expect(hits[0]!.similarity).toBeNull()
+    expect(hits[1]!.similarity).toBe(0.8)
+  })
+
+  it('両方にヒットした id はタイトル一致側だけ残る（重複除去）', () => {
+    const hits = mergeSearchHits([t('a')], [v('a', 0.9), v('b', 0.7)], 8)
+    expect(hits.map(h => h.id)).toEqual(['a', 'b'])
+    expect(hits[0]!.similarity).toBeNull()
+  })
+
+  it('limit で切り詰める（タイトル一致が優先して生き残る）', () => {
+    const hits = mergeSearchHits([t('a'), t('b')], [v('c', 0.9), v('d', 0.8)], 3)
+    expect(hits.map(h => h.id)).toEqual(['a', 'b', 'c'])
+  })
+
+  it('タイトル一致ゼロならベクトルヒットのみ、両方ゼロなら空', () => {
+    expect(mergeSearchHits([], [v('a', 0.5)], 8).map(h => h.id)).toEqual(['a'])
+    expect(mergeSearchHits([], [], 8)).toEqual([])
+  })
+
+  it('snake_case → camelCase のマッピング（category_id → categoryId）', () => {
+    const hits = mergeSearchHits([{ id: 'a', title: null, body: 'b', category_id: 'cat-1' }], [], 8)
+    expect(hits[0]!.categoryId).toBe('cat-1')
+    expect(hits[0]!.title).toBeNull()
   })
 })

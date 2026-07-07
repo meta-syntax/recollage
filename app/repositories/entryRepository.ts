@@ -16,6 +16,15 @@ export interface EntryDraft {
   visual: Visual | null
 }
 
+/** 索引（検索）のヒット。similarity はベクトル類似度 [0,1]、タイトル一致ヒットは null */
+export interface SearchHit {
+  id: string
+  title: string | null
+  body: string
+  categoryId: string | null
+  similarity: number | null
+}
+
 export interface EntryRepository {
   listEntries(): Promise<Entry[]>
   listCategories(): Promise<Category[]>
@@ -37,4 +46,9 @@ export interface EntryRepository {
    * embedding を持たないデータソースは {} を返す（w_related 項が消えるだけ）
    */
   getAffinities(recentIds: string[]): Promise<Record<string, number>>
+  /**
+   * 索引（ADR-016）: タイトル部分一致を先頭に、意味検索（embedding コサイン類似）を続けて返す。
+   * embedding を持たないデータソースは文字列一致のみでよい
+   */
+  searchEntries(query: string, limit?: number): Promise<SearchHit[]>
 }

@@ -2,6 +2,8 @@
 defineProps<{
   count: number
 }>()
+
+const indexOpen = useIndexOpen()
 </script>
 
 <template>
@@ -13,6 +15,13 @@ defineProps<{
       <div class="colophon-note">
         Recollage はあなたの {{ count }} 篇の記録からこの誌面を編みました。組み直すたび、誌面は別の表情を見せます。
       </div>
+      <button
+        class="colophon-index"
+        type="button"
+        @click="indexOpen = true"
+      >
+        索引を繰る <span class="colophon-kbd">⌘K</span>
+      </button>
     </div>
   </footer>
 </template>
@@ -31,6 +40,25 @@ defineProps<{
   font-family: var(--font-sans);
   font-size: 11px;
   letter-spacing: .14em;
+  color: var(--text-soft);
+}
+.colophon-index {
+  margin-top: 20px;
+  padding: 5px 14px;
+  border: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: .22em;
+  color: var(--text-muted);
+}
+.colophon-index:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+.colophon-kbd {
+  letter-spacing: .06em;
   color: var(--text-soft);
 }
 </style>

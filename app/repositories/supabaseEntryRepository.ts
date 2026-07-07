@@ -5,7 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Entry, EntrySource, Visual } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
 import { embeddingText } from '~~/shared/utils/embeddingText'
-import type { EntryDraft, EntryRepository } from './entryRepository'
+import type { EntryDraft, EntryRepository, SearchHit } from './entryRepository'
 
 // ── 行 ↔ ドメイン マッピング ─────────────────────────────
 
@@ -111,6 +111,40 @@ async function tryEmbed(e: { title: string | null, keyPoints: string[], body: st
   catch {
     return null
   }
+}
+
+/** ilike パターンに埋め込む文字列のエスケープ（% _ \ をリテラル扱いにする） */
+function escapeLike(s: string): string {
+  return s.replace(/[\\%_]/g, m => `\\${m}`)
+}
+
+/** match_entries RPC の行（0002_embeddings.sql） */
+export interface MatchRow {
+  id: string
+  title: string | null
+  body: string
+  category_id: string | null
+  similarity: number
+}
+
+/**
+ * 索引のマージ（ADR-016）: タイトル一致を先頭に、ベクトルヒットを重複除去して続ける。
+ * 純関数としてテスト対象にする
+ */
+export function mergeSearchHits(titleRows: Omit<MatchRow, 'similarity'>[], vectorRows: MatchRow[], limit: number): SearchHit[] {
+  const hits: SearchHit[] = titleRows.map(r => ({
+    id: r.id,
+    title: r.title,
+    body: r.body,
+    categoryId: r.category_id,
+    similarity: null,
+  }))
+  const seen = new Set(hits.map(h => h.id))
+  for (const r of vectorRows) {
+    if (seen.has(r.id)) continue
+    hits.push({ id: r.id, title: r.title, body: r.body, categoryId: r.category_id, similarity: r.similarity })
+  }
+  return hits.slice(0, limit)
 }
 
 /** parentId の兄弟を sortOrder 順に取り出し、0..n の連番を振り直す（ADR-011: 兄弟全件書き換え） */
@@ -261,6 +295,35 @@ export class SupabaseEntryRepository implements EntryRepository {
       const { error } = await this.client.from('categories').update({ sort_order: i }).eq('id', c.id)
       throwOn(error)
     }))
+  }
+
+  async searchEntries(query: string, limit = 8): Promise<SearchHit[]> {
+    // タイトル部分一致（確実な再訪）とクエリ embedding（曖昧な想起）を並行で引く。
+    // embedding の計算失敗時はタイトル一致のみに縮退する（ADR-015 と同じ失敗方針）
+    const [titleRes, queryEmbedding] = await Promise.all([
+      this.client.from('entries')
+        .select('id, title, body, category_id')
+        .ilike('title', `%${escapeLike(query)}%`)
+        .order('updated_at', { ascending: false })
+        .limit(limit),
+      $fetch<{ embedding: number[] }>('/api/embed', {
+        method: 'POST',
+        body: { text: query, type: 'query' },
+      }).then(r => r.embedding).catch(() => null),
+    ])
+    throwOn(titleRes.error)
+    const titleRows = (titleRes.data ?? []) as Omit<MatchRow, 'similarity'>[]
+
+    let vectorRows: MatchRow[] = []
+    if (queryEmbedding) {
+      const { data, error } = await this.client.rpc('match_entries', {
+        query_embedding: queryEmbedding,
+        match_count: limit,
+      })
+      throwOn(error)
+      vectorRows = (data ?? []) as MatchRow[]
+    }
+    return mergeSearchHits(titleRows, vectorRows, limit)
   }
 
   async getAffinities(recentIds: string[]): Promise<Record<string, number>> {

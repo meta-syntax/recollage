@@ -14,7 +14,7 @@
 
 import type { Entry } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
-import type { EntryDraft, EntryRepository } from './entryRepository'
+import type { EntryDraft, EntryRepository, SearchHit } from './entryRepository'
 
 const mock = import.meta.glob('../../data/mock/*.json', { eager: true, import: 'default' })
 const sample = import.meta.glob('../../data/sample/*.json', { eager: true, import: 'default' })
@@ -214,5 +214,14 @@ export class MockEntryRepository implements EntryRepository {
   async getAffinities(): Promise<Record<string, number>> {
     // mock は embedding を持たない（ADR-015）。w_related 項が消えるだけ
     return {}
+  }
+
+  async searchEntries(query: string, limit = 8): Promise<SearchHit[]> {
+    // mock は embedding を持たない（ADR-016）。タイトル・本文の部分一致のみ
+    const q = query.toLowerCase()
+    return (await this.listEntries())
+      .filter(e => (e.title ?? '').toLowerCase().includes(q) || e.body.toLowerCase().includes(q))
+      .slice(0, limit)
+      .map(e => ({ id: e.id, title: e.title, body: e.body, categoryId: e.categoryId, similarity: null }))
   }
 }
