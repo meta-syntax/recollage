@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_FEED_SCORE_CONFIG,
+  applyFrozenOrder,
   composeFeed,
   epsilon,
   feedScore,
@@ -158,5 +159,41 @@ describe('feedScore / composeFeed', () => {
     const withoutFn = composeFeed(entries, NOW, 's').map(e => e.id)
     const zeroFn = composeFeed(entries, NOW, 's', CFG, () => 0).map(e => e.id)
     expect(withoutFn).toEqual(zeroFn)
+  })
+})
+
+describe('applyFrozenOrder（号の並び順凍結）', () => {
+  it('スナップショット順に並べ直す（entries の順序に依存しない）', () => {
+    const entries = [entry({ id: 'a' }), entry({ id: 'b' }), entry({ id: 'c' })]
+    expect(applyFrozenOrder(entries, ['c', 'a', 'b']).map(e => e.id)).toEqual(['c', 'a', 'b'])
+  })
+
+  it('閲覧で lastViewedAt / viewCount が変わっても順序は不変', () => {
+    const before = [entry({ id: 'a' }), entry({ id: 'b' })]
+    const order = composeFeed(before, NOW, 's').map(e => e.id)
+    const after = [
+      entry({ id: 'a', lastViewedAt: daysAgo(0), viewCount: 5 }),
+      entry({ id: 'b' }),
+    ]
+    expect(applyFrozenOrder(after, order).map(e => e.id)).toEqual(order)
+  })
+
+  it('order に無い id（号の途中で増えた分）は作成日降順で先頭に置く', () => {
+    const entries = [
+      entry({ id: 'old' }),
+      entry({ id: 'new1', createdAt: daysAgo(1) }),
+      entry({ id: 'new2', createdAt: daysAgo(0) }),
+    ]
+    expect(applyFrozenOrder(entries, ['old']).map(e => e.id)).toEqual(['new2', 'new1', 'old'])
+  })
+
+  it('order にあるが entries に無い id（削除済み）は無視する', () => {
+    const entries = [entry({ id: 'a' })]
+    expect(applyFrozenOrder(entries, ['gone', 'a']).map(e => e.id)).toEqual(['a'])
+  })
+
+  it('空の order なら entries 全件が作成日降順で並ぶ', () => {
+    const entries = [entry({ id: 'a', createdAt: daysAgo(2) }), entry({ id: 'b', createdAt: daysAgo(1) })]
+    expect(applyFrozenOrder(entries, []).map(e => e.id)).toEqual(['b', 'a'])
   })
 })

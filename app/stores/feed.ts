@@ -11,11 +11,15 @@ function newSeed(): string {
 export function useFeedComposition() {
   const seed = useState('feed-seed', () => newSeed())
   const composedAtMs = useState('feed-composed-at', () => Date.now())
+  // 号の並び順スナップショット。閲覧して戻るだけで誌面が組み変わらないよう、
+  // 最初に組んだ順序を号（seed）の間は凍結する。null = 未組成（次のデータ到着時に組む）
+  const orderIds = useState<string[] | null>('feed-order', () => null)
 
   function recompose() {
     seed.value = newSeed()
     composedAtMs.value = Date.now()
+    orderIds.value = null
   }
 
-  return { seed, composedAtMs, recompose }
+  return { seed, composedAtMs, orderIds, recompose }
 }

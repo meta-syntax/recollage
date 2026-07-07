@@ -1,7 +1,7 @@
 import type { Entry } from '~~/shared/types/entry'
 import type { Density } from '~~/shared/utils/deriveDensity'
 import { deriveDensity } from '~~/shared/utils/deriveDensity'
-import { composeFeed } from '~~/shared/utils/feedScore'
+import { applyFrozenOrder, composeFeed } from '~~/shared/utils/feedScore'
 
 export type { Density }
 
@@ -78,8 +78,17 @@ export function useFeed() {
   // 表示はキャッシュで即座に、内容は裏で最新化（編集・キャプチャ後に戻っても古い誌面のままにしない）
   onMounted(() => refresh())
 
-  // 号の状態（seed・基準時刻）はアプリ寿命 → stores/feed.ts
-  const { seed, composedAtMs, recompose } = useFeedComposition()
+  // 号の状態（seed・基準時刻・並び順スナップショット）はアプリ寿命 → stores/feed.ts
+  const { seed, composedAtMs, orderIds, recompose } = useFeedComposition()
+
+  // 号の並び順は最初の組成で凍結する。閲覧（recordView → lastViewedAt/viewCount/affinity の変化）を
+  // SWR の裏 refresh が拾っても、目の前の誌面が並び替わらないため。「組み直す」で破棄→再組成
+  watchEffect(() => {
+    if (orderIds.value !== null || !data.value) return
+    const { entries, affinities } = data.value
+    orderIds.value = composeFeed(entries, composedAtMs.value, seed.value, undefined, id => affinities[id] ?? 0)
+      .map(e => e.id)
+  })
 
   // 目次の選択カテゴリは URL クエリで同期（リロード・詳細から戻るでも復元される）
   const route = useRoute()
@@ -107,13 +116,17 @@ export function useFeed() {
     return ids
   })
 
-  // スコア降順（Recency + Resurface + Affinity + ε）に編成したカードVM列
+  // スコア降順（Recency + Resurface + Affinity + ε）に編成したカードVM列。
+  // 凍結済みの号はスナップショット順（内容の更新だけ反映される）
   const vms = computed<FeedCardVM[]>(() => {
     if (!data.value) return []
     const label = buildCategoryLabel(data.value.categories)
     const f = filterIds.value
-    const { affinities } = data.value
-    return composeFeed(data.value.entries, composedAtMs.value, seed.value, undefined, id => affinities[id] ?? 0)
+    const { entries, affinities } = data.value
+    const ordered = orderIds.value !== null
+      ? applyFrozenOrder(entries, orderIds.value)
+      : composeFeed(entries, composedAtMs.value, seed.value, undefined, id => affinities[id] ?? 0)
+    return ordered
       .filter(e => f === null
         ? true
         : f === 'fragment'
