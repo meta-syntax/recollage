@@ -2,7 +2,7 @@
 // 密度は保存せず、フィールドの充足状況から導出する。
 // フィード編成・カードコンポーネント・インポート検証ログが必ずこの1関数を共有する。
 
-import type { Entry } from '../types/entry'
+import type { Entry } from '../types/entry.ts'
 
 export type Density = 'L' | 'M' | 'S'
 
