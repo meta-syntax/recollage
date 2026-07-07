@@ -85,13 +85,12 @@ function snippetOf(h: SearchHit): string {
         v-model="query"
         class="index-input"
         type="text"
-        placeholder="あの話、どこに書いたか"
       >
       <div
         v-if="searching"
         class="index-status"
       >
-        索引を繰っています……
+        ……
       </div>
       <ul
         v-else-if="hits.length"
@@ -108,10 +107,6 @@ function snippetOf(h: SearchHit): string {
           >
             <span class="hit-title">{{ displayTitle(h.title, h.body) }}</span>
             <span class="hit-snippet">{{ snippetOf(h) }}</span>
-            <span
-              v-if="h.similarity !== null"
-              class="hit-sim"
-            >近さ {{ h.similarity.toFixed(2) }}</span>
           </button>
         </li>
       </ul>
@@ -203,13 +198,5 @@ function snippetOf(h: SearchHit): string {
   font-size: 12px;
   line-height: 1.7;
   color: var(--text-muted);
-}
-.hit-sim {
-  display: block;
-  margin-top: 4px;
-  font-family: var(--font-sans);
-  font-size: 10px;
-  letter-spacing: .16em;
-  color: var(--text-soft);
 }
 </style>

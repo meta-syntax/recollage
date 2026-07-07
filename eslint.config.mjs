@@ -6,5 +6,14 @@ export default withNuxt(
   {
     ignores: ['support.js', '*.dc.html'],
   },
-  // 追加のルールはここに書く
+  // 状態の寿命はディレクトリで宣言する: useState（アプリ寿命の状態）は app/stores/ にのみ置く
+  {
+    files: ['app/components/**', 'app/composables/**', 'app/pages/**'],
+    rules: {
+      'no-restricted-syntax': ['error', {
+        selector: 'CallExpression[callee.name="useState"]',
+        message: 'useState は app/stores/ にのみ置く（状態の寿命はディレクトリで宣言する）',
+      }],
+    },
+  },
 )
