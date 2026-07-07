@@ -56,7 +56,7 @@ export function useFeed() {
   // ADR-001: データソースはこの1点でだけ選ぶ（ADR-013: ファクトリに一本化）
   const repo = useEntryRepository()
 
-  const { data } = useAsyncData('feed', async () => {
+  const { data, refresh } = useAsyncData('feed', async () => {
     const [entries, categories] = await Promise.all([
       repo.listEntries(),
       repo.listCategories(),
@@ -69,7 +69,14 @@ export function useFeed() {
       .map(e => e.id)
     const affinities = await repo.getAffinities(recentIds)
     return { entries, categories, affinities }
+  }, {
+    // stale-while-revalidate: 詳細から戻ったとき前回の誌面を即座に出す。
+    // カスタム getCachedData を渡すと Nuxt4 の unmount 時キャッシュ破棄（purgeCachedData）の対象外になる
+    getCachedData: (key, nuxtApp, ctx) =>
+      ctx.cause === 'refresh:manual' ? undefined : nuxtApp.payload.data[key],
   })
+  // 表示はキャッシュで即座に、内容は裏で最新化（編集・キャプチャ後に戻っても古い誌面のままにしない）
+  onMounted(() => refresh())
 
   // 号の状態（seed・基準時刻）はアプリ寿命 → stores/feed.ts
   const { seed, composedAtMs, recompose } = useFeedComposition()
@@ -168,7 +175,11 @@ export function useFeed() {
     return { feature, sides, rest }
   })
 
+  // 初回コールドロードのみ true（SWR キャッシュがあれば裏更新中も false）
+  const loading = computed(() => !data.value)
+
   return {
+    loading,
     count,
     issueNo,
     issueDate,

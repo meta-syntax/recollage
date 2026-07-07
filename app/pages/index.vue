@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { count, issueNo, issueDate, composedAt, navCats, selectedCat, selectCat, feature, sides, rest, compositionKey, recompose } = useFeed()
+const { loading, count, issueNo, issueDate, composedAt, navCats, selectedCat, selectCat, feature, sides, rest, compositionKey, recompose } = useFeed()
 
 const captureOpen = ref(false)
 
@@ -36,8 +36,17 @@ const tagline = computed(() => {
       @select="selectCat"
     />
 
+    <!-- 初回コールドロードのみ（再訪は SWR キャッシュで即表示） -->
+    <div
+      v-if="loading"
+      class="composing"
+    >
+      組版中……
+    </div>
+
     <!-- 誌面本体。組み直しごとに版が下からフェードインして差し替わる -->
     <Transition
+      v-else
       name="sheet"
       mode="out-in"
       appear
@@ -82,7 +91,10 @@ const tagline = computed(() => {
       </div>
     </Transition>
 
-    <FeedColophon :count="count" />
+    <FeedColophon
+      v-if="!loading"
+      :count="count"
+    />
   </div>
 </template>
 
@@ -94,6 +106,15 @@ const tagline = computed(() => {
   min-height: 100vh;
   color: var(--text);
   font-family: var(--font-serif);
+}
+
+/* 初回ロード中の組版表示 */
+.composing {
+  padding: 140px 0;
+  text-align: center;
+  font-size: 12.5px;
+  letter-spacing: .3em;
+  color: var(--text-soft);
 }
 
 /* 一面 */

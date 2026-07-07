@@ -17,17 +17,22 @@ export function useEntry(id: string) {
   // ADR-001: データソースはこの1点でだけ選ぶ（ADR-013: ファクトリに一本化）
   const repo = useEntryRepository()
 
-  const { data, status } = useAsyncData(`entry:${id}`, async () => {
+  const { data, status, refresh } = useAsyncData(`entry:${id}`, async () => {
     const [entry, categories] = await Promise.all([
       repo.getEntry(id),
       repo.listCategories(),
     ])
     return { entry, categories }
+  }, {
+    // stale-while-revalidate: 再訪時は前回の内容を即座に出し、裏で最新化（useFeed と同型）
+    getCachedData: (key, nuxtApp, ctx) =>
+      ctx.cause === 'refresh:manual' ? undefined : nuxtApp.payload.data[key],
   })
 
   // 閲覧記録は「詳細を開いたとき」のみ（ADR-008）。表示とは独立に一度だけ打つ
   onMounted(() => {
     repo.recordView(id)
+    refresh()
   })
 
   const entry = computed<EntryDetailVM | null>(() => {
