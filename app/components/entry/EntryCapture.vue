@@ -2,12 +2,11 @@
 // 書き捨てキャプチャ（ADR-011 面1）＋保存後の「整える」トースト（面2）。
 // body だけを書いて綴じる。title/カテゴリ等は聞かない（null 保存 → 書きつけ）
 import type { EntryRepository } from '~/repositories/entryRepository'
-import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
 const open = defineModel<boolean>('open', { required: true })
 
-// ADR-001: データソースはこの1点でだけ選ぶ
-const repo: EntryRepository = new MockEntryRepository()
+// ADR-001/ADR-013: データソースの選択はファクトリに集約
+const repo: EntryRepository = useEntryRepository()
 
 const body = ref('')
 const saving = ref(false)

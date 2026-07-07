@@ -1,14 +1,13 @@
 <script setup lang="ts">
 // 整えの一枚フォーム（ADR-011 面3）。入口3つ（トースト／書きつけカードの徴／詳細ページ）の共通着地点
 import type { EntryDraft, EntryRepository } from '~/repositories/entryRepository'
-import { MockEntryRepository } from '~/repositories/mockEntryRepository'
 
 const props = defineProps<{
   id: string
 }>()
 
-// ADR-001: データソースはこの1点でだけ選ぶ
-const repo: EntryRepository = new MockEntryRepository()
+// ADR-001/ADR-013: データソースの選択はファクトリに集約
+const repo: EntryRepository = useEntryRepository()
 
 const { data, status } = useAsyncData(`entry-edit:${props.id}`, async () => {
   const [entry, categories] = await Promise.all([
