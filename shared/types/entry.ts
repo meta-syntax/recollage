@@ -8,9 +8,9 @@ export interface Visual {
   content: string
 }
 
-/** エントリの出自。manual=アプリ内入力 / obsidian=インポート。 */
+/** エントリの出自。manual=アプリ内入力 / obsidian=インポート / mcp=AI壁打ちからのMCP書き込み。 */
 export interface EntrySource {
-  kind: 'manual' | 'obsidian'
+  kind: 'manual' | 'obsidian' | 'mcp'
   /** インポート元の Vault 内パス */
   path?: string
   /** 取り込み日時（ISO 8601）。コンテンツの誕生日は createdAt 側に持つ */

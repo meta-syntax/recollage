@@ -4,6 +4,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Entry, EntrySource, Visual } from '~~/shared/types/entry'
 import type { Category } from '~~/shared/types/category'
+import { embeddingText } from '~~/shared/utils/embeddingText'
 import type { EntryDraft, EntryRepository } from './entryRepository'
 
 // ── 行 ↔ ドメイン マッピング ─────────────────────────────
@@ -89,6 +90,29 @@ function throwOn(error: { message: string } | null): void {
   if (error) throw new Error(error.message)
 }
 
+/**
+ * entries の読み取りカラム（embedding を除く全カラム）。
+ * ADR-015: 768次元ベクトルを一覧・取得で転送しないため select('*') は使わない
+ */
+const ENTRY_COLUMNS = 'id, title, body, key_points, background, category_id, visual, source, created_at, updated_at, last_viewed_at, view_count'
+
+/**
+ * embedding をローカル推論（Nitro /api/embed → Ruri v3）で計算する。
+ * 失敗しても書き込みを止めない（ADR-015: nullable が不変条件）
+ */
+async function tryEmbed(e: { title: string | null, keyPoints: string[], body: string }): Promise<number[] | null> {
+  try {
+    const { embedding } = await $fetch<{ embedding: number[] }>('/api/embed', {
+      method: 'POST',
+      body: { text: embeddingText(e) },
+    })
+    return embedding
+  }
+  catch {
+    return null
+  }
+}
+
 /** parentId の兄弟を sortOrder 順に取り出し、0..n の連番を振り直す（ADR-011: 兄弟全件書き換え） */
 function renumber(cats: Category[], parentId: string | null): void {
   cats
@@ -105,9 +129,9 @@ export class SupabaseEntryRepository implements EntryRepository {
   constructor(private readonly client: SupabaseClient) {}
 
   async listEntries(): Promise<Entry[]> {
-    const { data, error } = await this.client.from('entries').select('*').order('created_at')
+    const { data, error } = await this.client.from('entries').select(ENTRY_COLUMNS).order('created_at')
     throwOn(error)
-    return ((data ?? []) as EntryRow[]).map(toEntry)
+    return ((data ?? []) as unknown as EntryRow[]).map(toEntry)
   }
 
   async listCategories(): Promise<Category[]> {
@@ -117,9 +141,9 @@ export class SupabaseEntryRepository implements EntryRepository {
   }
 
   async getEntry(id: string): Promise<Entry | null> {
-    const { data, error } = await this.client.from('entries').select('*').eq('id', id).maybeSingle()
+    const { data, error } = await this.client.from('entries').select(ENTRY_COLUMNS).eq('id', id).maybeSingle()
     throwOn(error)
-    return data ? toEntry(data as EntryRow) : null
+    return data ? toEntry(data as unknown as EntryRow) : null
   }
 
   async recordView(id: string): Promise<void> {
@@ -145,13 +169,15 @@ export class SupabaseEntryRepository implements EntryRepository {
       lastViewedAt: null,
       viewCount: 0,
     }
-    const { error } = await this.client.from('entries').insert(toEntryRow(entry))
+    const embedding = await tryEmbed(entry)
+    const { error } = await this.client.from('entries').insert({ ...toEntryRow(entry), embedding })
     throwOn(error)
     return entry
   }
 
   async updateEntry(id: string, draft: EntryDraft): Promise<Entry> {
     const now = new Date().toISOString()
+    const embedding = await tryEmbed(draft)
     const { data, error } = await this.client.from('entries').update({
       title: draft.title,
       body: draft.body,
@@ -160,10 +186,11 @@ export class SupabaseEntryRepository implements EntryRepository {
       category_id: draft.categoryId,
       visual: draft.visual,
       updated_at: now,
-    }).eq('id', id).select().maybeSingle()
+      ...(embedding ? { embedding } : {}),
+    }).eq('id', id).select(ENTRY_COLUMNS).maybeSingle()
     throwOn(error)
     if (!data) throw new Error(`エントリが見つかりません: ${id}`)
-    return toEntry(data as EntryRow)
+    return toEntry(data as unknown as EntryRow)
   }
 
   async createCategory(name: string, parentId: string | null): Promise<Category> {
@@ -234,5 +261,14 @@ export class SupabaseEntryRepository implements EntryRepository {
       const { error } = await this.client.from('categories').update({ sort_order: i }).eq('id', c.id)
       throwOn(error)
     }))
+  }
+
+  async getAffinities(recentIds: string[]): Promise<Record<string, number>> {
+    if (recentIds.length === 0) return {}
+    const { data, error } = await this.client.rpc('feed_affinity', { recent_ids: recentIds })
+    throwOn(error)
+    return Object.fromEntries(
+      ((data ?? []) as { id: string, affinity: number }[]).map(r => [r.id, r.affinity]),
+    )
   }
 }

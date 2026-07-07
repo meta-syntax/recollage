@@ -130,8 +130,33 @@ describe('feedScore / composeFeed', () => {
     }
   })
 
-  it('wRelated=0 のとき affinity はスコアに影響しない（フェーズ3の形骸化確認）', () => {
+  it('wRelated=0 のとき affinity はスコアに影響しない（mock モードの形骸化確認）', () => {
     const e = entry({ id: 'a', createdAt: daysAgo(3) })
-    expect(feedScore(e, NOW, 's', CFG, 0)).toBe(feedScore(e, NOW, 's', CFG, 1))
+    const cfg = { ...CFG, wRelated: 0 }
+    expect(feedScore(e, NOW, 's', cfg, 0)).toBe(feedScore(e, NOW, 's', cfg, 1))
+  })
+
+  it('affinity は wRelated 倍で線形に加算される（ADR-015）', () => {
+    const e = entry({ id: 'a', createdAt: daysAgo(3) })
+    expect(feedScore(e, NOW, 's', CFG, 1) - feedScore(e, NOW, 's', CFG, 0))
+      .toBeCloseTo(CFG.wRelated, 10)
+  })
+
+  it('composeFeed は affinityOf を各エントリに適用する（近い記録が浮かぶ）', () => {
+    // 同条件の2件に affinity だけ差をつける。ε(±0.15) を超える差になるよう wRelated=0.3 × affinity 1.0
+    const a = entry({ id: 'a', createdAt: daysAgo(30) })
+    const b = entry({ id: 'b', createdAt: daysAgo(30) })
+    for (let i = 0; i < 50; i++) {
+      const [first] = composeFeed([a, b], NOW, `seed-${i}`, CFG, id => (id === 'b' ? 1 : 0))
+      expect(first!.id).toBe('b')
+    }
+  })
+
+  it('composeFeed は affinityOf 省略で従来挙動（affinity 全 0）と一致する', () => {
+    const entries = Array.from({ length: 10 }, (_, i) =>
+      entry({ id: `e${i}`, createdAt: daysAgo(i * 5) }))
+    const withoutFn = composeFeed(entries, NOW, 's').map(e => e.id)
+    const zeroFn = composeFeed(entries, NOW, 's', CFG, () => 0).map(e => e.id)
+    expect(withoutFn).toEqual(zeroFn)
   })
 })

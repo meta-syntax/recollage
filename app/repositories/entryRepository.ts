@@ -32,4 +32,9 @@ export interface EntryRepository {
   moveCategory(id: string, parentId: string | null, index: number): Promise<void>
   /** 子カテゴリを持つ場合は投げる。所属エントリは書きつけ（categoryId: null）へ退避する */
   deleteCategory(id: string): Promise<void>
+  /**
+   * 誌面の Affinity 項（ADR-015）: 直近閲覧エントリ群への近さを id → [0,1] で返す。
+   * embedding を持たないデータソースは {} を返す（w_related 項が消えるだけ）
+   */
+  getAffinities(recentIds: string[]): Promise<Record<string, number>>
 }

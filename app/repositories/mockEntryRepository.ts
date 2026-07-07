@@ -210,4 +210,9 @@ export class MockEntryRepository implements EntryRepository {
       return next
     })
   }
+
+  async getAffinities(): Promise<Record<string, number>> {
+    // mock は embedding を持たない（ADR-015）。w_related 項が消えるだけ
+    return {}
+  }
 }

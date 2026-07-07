@@ -61,7 +61,14 @@ export function useFeed() {
       repo.listEntries(),
       repo.listCategories(),
     ])
-    return { entries, categories }
+    // Affinity 項のシード = lastViewedAt 降順の直近閲覧5件（ADR-015）。閲覧ゼロなら {}
+    const recentIds = entries
+      .filter(e => e.lastViewedAt !== null)
+      .sort((a, b) => b.lastViewedAt!.localeCompare(a.lastViewedAt!))
+      .slice(0, 5)
+      .map(e => e.id)
+    const affinities = await repo.getAffinities(recentIds)
+    return { entries, categories, affinities }
   })
 
   // 号の状態（seed・基準時刻）はアプリ寿命 → stores/feed.ts
@@ -93,12 +100,13 @@ export function useFeed() {
     return ids
   })
 
-  // スコア降順（Recency + Resurface + ε）に編成したカードVM列
+  // スコア降順（Recency + Resurface + Affinity + ε）に編成したカードVM列
   const vms = computed<FeedCardVM[]>(() => {
     if (!data.value) return []
     const label = buildCategoryLabel(data.value.categories)
     const f = filterIds.value
-    return composeFeed(data.value.entries, composedAtMs.value, seed.value)
+    const { affinities } = data.value
+    return composeFeed(data.value.entries, composedAtMs.value, seed.value, undefined, id => affinities[id] ?? 0)
       .filter(e => f === null
         ? true
         : f === 'fragment'
